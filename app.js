@@ -14,10 +14,11 @@ const SECTION_DEFS = [
 
 const MARKS = { mcq: 1, debug: 5, cod: 15 };
 
-// Practice is untimed. The two exam modes count down and auto-submit at zero.
+// Practice is untimed. The three exam modes count down and auto-submit at zero.
 const MODES = {
   practice: { id: 'practice', name: 'Practice', blurb: 'No timer · unlimited attempts', limit: 0 },
   unit: { id: 'unit', name: 'Unit exam', blurb: 'One unit · 2 hours', limit: 120 * 60 },
+  mcqtest: { id: 'mcqtest', name: 'MCQ test', blurb: 'All units · 100 MCQ · 2 hours', limit: 120 * 60 },
   model: { id: 'model', name: 'Model exam', blurb: 'All units · 100 marks · 3 hours', limit: 180 * 60 }
 };
 
@@ -34,7 +35,7 @@ const JUDGE0_TIMEOUT = 15000;
 
 const state = {
   screen: 'start', // start | exam | report
-  mode: 'practice', // practice | unit | model
+  mode: 'practice', // practice | unit | mcqtest | model
   unit: null,
   startUnit: Object.keys(DB)[0],
   paper: null, // { mcq: [], debug: [], cod: [] } — questions tagged with _unit/_ref
@@ -151,6 +152,12 @@ function buildModelPaper() {
   return { mcq: [], debug: shuffled(debug), cod: shuffled(cod) };
 }
 
+// MCQ test: the whole objective bank (20 per unit × 5 = 100), shuffled together.
+function buildMcqTestPaper() {
+  const mcq = Object.keys(DB).flatMap((u) => DB[u].mcq.map((_, i) => tagQuestion(u, 'mcq', i)));
+  return { mcq: shuffled(mcq), debug: [], cod: [] };
+}
+
 function paperPlan(paper) {
   const plan = {};
   SECTION_DEFS.forEach((def) => {
@@ -183,6 +190,7 @@ function paperTotals(paper = state.paper) {
 
 function paperTitle() {
   if (state.mode === 'model') return 'Model exam · All units';
+  if (state.mode === 'mcqtest') return 'MCQ test · All units';
   const name = DB[state.unit] ? DB[state.unit].name : 'Unit';
   return `${name} · ${state.mode === 'unit' ? 'Unit exam' : 'Practice'}`;
 }
@@ -312,18 +320,24 @@ function renderStart() {
   state.screen = 'start';
   stopTimer();
   setExamChrome(false);
+  $('#examMain').classList.remove('wide-palette');
 
   const saved = readSaved();
   if (!DB[state.startUnit]) state.startUnit = Object.keys(DB)[0];
   if (!MODES[state.mode]) state.mode = 'practice';
 
   const isModel = state.mode === 'model';
+  const isMcqTest = state.mode === 'mcqtest';
+  const allUnits = isModel || isMcqTest;
   const active = DB[state.startUnit];
   const savedUnit = saved && saved.unit ? saved.unit : null;
   const unitKeys = Object.keys(DB);
+  const bankMcq = unitKeys.reduce((n, key) => n + DB[key].mcq.length, 0);
 
   const preview = isModel
     ? { mcq: 0, debug: unitKeys.length, cod: unitKeys.length }
+    : isMcqTest
+    ? { mcq: bankMcq, debug: 0, cod: 0 }
     : { mcq: active.mcq.length, debug: active.debug.length, cod: active.cod.length };
   const maxMarks = preview.mcq * MARKS.mcq + preview.debug * MARKS.debug + preview.cod * MARKS.cod;
   const totalQuestions = preview.mcq + preview.debug + preview.cod;
@@ -373,16 +387,24 @@ function renderStart() {
        </div>`
     : '';
 
-  const summaryTitle = isModel ? 'Model exam · all five units' : esc(active.name);
-  const timeLine = isModel
-    ? clockText(MODES.model.limit)
-    : MODES[state.mode].limit
-    ? clockText(MODES[state.mode].limit)
-    : 'no time limit';
+  const summaryTitle = isModel
+    ? 'Model exam · all five units'
+    : isMcqTest
+    ? 'MCQ test · all five units'
+    : esc(active.name);
+  const timeLine = MODES[state.mode].limit ? clockText(MODES[state.mode].limit) : 'no time limit';
   const composition = isModel
     ? '5 debugging + 5 coding · one of each from every unit'
+    : isMcqTest
+    ? '20 MCQ from every unit · shuffled · no negative marking'
     : `${preview.mcq} MCQ · ${preview.debug} debugging · ${preview.cod} coding`;
-  const startLabel = isModel ? 'Start model exam' : state.mode === 'unit' ? 'Start unit exam' : 'Start practising';
+  const startLabel = isModel
+    ? 'Start model exam'
+    : isMcqTest
+    ? 'Start MCQ test'
+    : state.mode === 'unit'
+    ? 'Start unit exam'
+    : 'Start practising';
 
   $('#examMain').innerHTML = `
     <section class="start">
@@ -390,8 +412,9 @@ function renderStart() {
         <span class="start-eyebrow">U24CS302 · Data Structures</span>
         <h1>Exam portal</h1>
         <p class="start-sub">
-          Practise any unit with no clock, sit a timed unit exam, or take the 100-mark model exam
-          across all five units. Answers and code are saved on this device as you go.
+          Practise a unit with no clock, sit a timed unit exam, take the 100-question MCQ test,
+          or attempt the 100-mark model exam across all five units. Answers and code are saved
+          on this device as you go.
         </p>
 
         ${resumeBanner}
@@ -400,7 +423,7 @@ function renderStart() {
         <div class="mode-grid" role="radiogroup" aria-label="Exam mode">${modeCards}</div>
 
         ${
-          isModel
+          allUnits
             ? ''
             : `<h2 class="start-h2">Choose a unit</h2>
                <div class="unit-list" role="radiogroup" aria-label="Choose a unit">${unitCards}</div>`
@@ -435,8 +458,14 @@ function setExamChrome(on) {
 function startExam({ mode = state.mode, unit = state.unit || state.startUnit, resume = false } = {}) {
   if (!resume) {
     state.mode = MODES[mode] ? mode : 'practice';
-    state.unit = state.mode === 'model' ? null : DB[unit] ? unit : state.startUnit;
-    state.paper = state.mode === 'model' ? buildModelPaper() : buildUnitPaper(state.unit);
+    const singleUnit = state.mode === 'practice' || state.mode === 'unit';
+    state.unit = singleUnit ? (DB[unit] ? unit : state.startUnit) : null;
+    state.paper =
+      state.mode === 'model'
+        ? buildModelPaper()
+        : state.mode === 'mcqtest'
+        ? buildMcqTestPaper()
+        : buildUnitPaper(state.unit);
     state.title = paperTitle();
     state.limit = MODES[state.mode].limit;
     state.remaining = state.limit;
@@ -474,6 +503,7 @@ function startExam({ mode = state.mode, unit = state.unit || state.startUnit, re
 
 function topbarChip() {
   if (state.mode === 'model') return 'MODEL EXAM · 100';
+  if (state.mode === 'mcqtest') return 'MCQ TEST · 100';
   const unitKey = state.unit ? state.unit.toUpperCase() : 'UNIT';
   return `${unitKey} · ${state.mode === 'unit' ? 'EXAM' : 'PRACTICE'}`;
 }
@@ -553,6 +583,9 @@ function render() {
 
   const key = keyOf();
   state.viewed[key] = true;
+
+  // Long papers (MCQ test: 100) get a wider palette with 4 tiles per row.
+  $('#examMain').classList.toggle('wide-palette', list.length > 40);
 
   $('#examMain').innerHTML = `
     <aside class="palette" aria-label="Question palette">
@@ -660,6 +693,7 @@ function bookmarkButton() {
 }
 
 function renderWorkspace() {
+  destroyLockedViews();
   if (state.sec === 'mcq') {
     cm = null;
     renderMcqWorkspace();
@@ -841,8 +875,11 @@ function renderCodeWorkspace() {
     </div>`;
 
   if (tab === 'code') {
+    mountLockedViews(q);
     mountEditor(key);
     bindCustomInput(key);
+  } else {
+    destroyLockedViews();
   }
 }
 
@@ -854,8 +891,51 @@ function lockedRegion(title, source, bottom = false) {
         <span aria-hidden="true">🔒</span> ${esc(title)}
         <span class="badge">read only</span>
       </header>
-      <pre>${esc(source)}</pre>
+      <div class="locked-code" data-locked-code="${bottom ? 'footer' : 'header'}"></div>
     </div>`;
+}
+
+// Read-only CodeMirror views for the locked header/footer, so the scaffolding is
+// syntax-highlighted exactly like the editable function between them.
+let lockedViews = [];
+
+function destroyLockedViews() {
+  lockedViews.forEach((view) => {
+    try {
+      view.getWrapperElement().remove();
+    } catch (_) {
+      /* already detached */
+    }
+  });
+  lockedViews = [];
+}
+
+function mountLockedViews(q) {
+  destroyLockedViews();
+  if (typeof CodeMirror === 'undefined') return;
+  $$('.locked-code').forEach((node) => {
+    const source = node.dataset.lockedCode === 'footer' ? q.footer : q.header;
+    if (!source) {
+      node.closest('.locked-region').remove();
+      return;
+    }
+    const view = CodeMirror(node, {
+      value: source,
+      mode: 'text/x-csrc',
+      theme: state.editorTheme === 'light' ? 'default' : 'dracula',
+      readOnly: true,
+      lineNumbers: false,
+      lineWrapping: false,
+      viewportMargin: Infinity,
+      cursorBlinkRate: -1,
+      scrollbarStyle: 'null',
+      tabSize: 4,
+      indentUnit: 4
+    });
+    view.getWrapperElement().style.fontSize = `${state.fontSize}px`;
+    view.refresh();
+    lockedViews.push(view);
+  });
 }
 
 function defaultCode() {
@@ -1541,6 +1621,7 @@ function scoreFor(sec) {
 function renderReport() {
   state.screen = 'report';
   setExamChrome(false);
+  $('#examMain').classList.remove('wide-palette');
   const sections = liveSections();
   const scored = sections.map((s) => ({ ...s, ...scoreFor(s.id) }));
   const total = scored.reduce((n, s) => n + s.earned, 0);
@@ -1619,7 +1700,14 @@ function renderReport() {
   const modeLine = `${MODES[state.mode] ? MODES[state.mode].name : 'Exam'} · ${
     state.limit ? clockText(state.limit) : 'no time limit'
   }`;
-  const retryLabel = state.mode === 'model' ? 'New model exam' : state.mode === 'unit' ? 'Retake this unit' : 'Practise again';
+  const retryLabel =
+    state.mode === 'model'
+      ? 'New model exam'
+      : state.mode === 'mcqtest'
+      ? 'New MCQ test'
+      : state.mode === 'unit'
+      ? 'Retake this unit'
+      : 'Practise again';
 
   $('#examMain').innerHTML = `
     <section class="report">
@@ -1785,6 +1873,10 @@ function handleAction(action, dataset, el) {
         cm.getWrapperElement().style.fontSize = `${state.fontSize}px`;
         cm.refresh();
       }
+      lockedViews.forEach((view) => {
+        view.getWrapperElement().style.fontSize = `${state.fontSize}px`;
+        view.refresh();
+      });
       persist();
       break;
     }

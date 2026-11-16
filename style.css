@@ -427,6 +427,21 @@ button {
   overflow: hidden;
 }
 
+/* 100-question MCQ test: wider rail, compact 4-across tiles. */
+.exam-main.wide-palette {
+  grid-template-columns: 176px minmax(0, 1fr);
+}
+.exam-main.wide-palette .palette-grid {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding: 10px 9px;
+}
+.exam-main.wide-palette .q-btn {
+  height: 31px;
+  font-size: 11.5px;
+  border-radius: 6px;
+}
+
 .palette-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1013,12 +1028,14 @@ body.resizing iframe {
   flex: none;
   border-bottom: 1px solid #1d2938;
   background: #0b1220;
-  max-height: 94px;
+  max-height: 150px;
   overflow: auto;
+  overscroll-behavior: contain;
 }
 .locked-region.bottom {
   border-bottom: 0;
   border-top: 1px solid #1d2938;
+  max-height: 170px;
 }
 .locked-region header {
   position: sticky;
@@ -1052,6 +1069,43 @@ body.resizing iframe {
   color: #9fb0c6;
   padding: 6px 12px 10px;
   white-space: pre;
+}
+
+/* Locked header/footer render as read-only CodeMirror views so they use the
+   same syntax colours, font size and theme as the editable function. */
+.locked-region .locked-code {
+  background: var(--code-bg);
+}
+.locked-region .CodeMirror {
+  height: auto !important;
+  font-size: 13px;
+  line-height: 1.62;
+  cursor: default;
+}
+.locked-region .CodeMirror-lines {
+  padding: 5px 0 8px;
+}
+.locked-region .CodeMirror pre.CodeMirror-line,
+.locked-region .CodeMirror pre.CodeMirror-line-like {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.locked-region .CodeMirror-cursor {
+  display: none !important;
+}
+.locked-region .CodeMirror-scroll {
+  overflow: visible !important;
+}
+
+/* Keyword italics mirror the reference portal's editor: `int`, `if`, `return`
+   lean, while function names stay upright and in their own colour. */
+.cm-s-dracula span.cm-keyword,
+.cm-s-default .cm-keyword {
+  font-style: italic;
+}
+.cm-s-dracula span.cm-def,
+.cm-s-default .cm-def {
+  font-weight: 700;
 }
 
 #editorMount,
@@ -2036,6 +2090,17 @@ table.tc-table .fail {
   }
   .palette-stats {
     display: none;
+  }
+  .exam-main.wide-palette {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .exam-main.wide-palette .palette-grid {
+    grid-template-columns: none;
+    grid-auto-columns: 38px;
+  }
+  .exam-main.wide-palette .q-btn {
+    height: 38px;
+    font-size: 13px;
   }
   .workspace {
     grid-template-columns: minmax(0, 1fr);
