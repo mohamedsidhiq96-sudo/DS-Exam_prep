@@ -784,6 +784,15 @@ function hiddenCases(q) {
   return out;
 }
 
+// Input format / Output format / Constraints blocks, straight from the paper.
+function specBlocks(q) {
+  const blk = (label, text) =>
+    text
+      ? `<div class="q-label">${label}</div><div class="q-text q-spec">${esc(text)}</div>`
+      : '';
+  return blk('Input format', q.inFmt) + blk('Output format', q.outFmt) + blk('Constraints', q.cons);
+}
+
 function renderCodeWorkspace() {
   const q = sectionList()[state.index];
   const isDebug = state.sec === 'debug';
@@ -803,6 +812,7 @@ function renderCodeWorkspace() {
       <div class="q-heading">${esc(q.title || `Question ${state.index + 1}`)}</div>
       <div class="q-text">${esc(q.ps || '')}</div>
 
+      ${specBlocks(q)}
       <div class="q-label">Sample test cases</div>
       ${samples
         .map(
@@ -1608,6 +1618,12 @@ function scoreFor(sec) {
   list.forEach((q, i) => {
     const key = `${sec}:${i}`;
     if (sec === 'mcq') {
+      // A question whose key has no matching option (a < 0) cannot be answered
+      // wrongly, so it is scored as a bonus for every attempt made.
+      if (q.a < 0) {
+        if (state.answers[key] !== undefined) earned += MARKS.mcq;
+        return;
+      }
       if (state.answers[key] === q.a) earned += MARKS.mcq;
       return;
     }
@@ -1650,9 +1666,16 @@ function renderReport() {
     .map((q, i) => {
       const key = `mcq:${i}`;
       const pick = state.answers[key];
-      const correct = pick === q.a;
+      const noKey = q.a < 0;
+      const correct = noKey ? pick !== undefined : pick === q.a;
       const badge = pick === undefined ? 'mute' : correct ? 'ok' : 'bad';
-      const badgeText = pick === undefined ? 'NOT ANSWERED' : correct ? 'CORRECT' : 'INCORRECT';
+      const badgeText =
+        pick === undefined ? 'NOT ANSWERED' : noKey ? 'BONUS' : correct ? 'CORRECT' : 'INCORRECT';
+      const keyText = noKey
+        ? `${esc(q.ansText || 'No correct option')}${
+            q.ansNote ? ` — ${esc(q.ansNote)}` : ' (not among the options — scored as bonus)'
+          }`
+        : esc(q.o[q.a]);
       return `<details class="review-item">
         <summary>Q${i + 1}. ${esc(q.q)}
           <span class="badge ${badge}">${badgeText}</span>
@@ -1661,7 +1684,7 @@ function renderReport() {
           ${typeof q.code === 'string' && q.code.trim() ? codeBlock(q.code) : ''}
           <div class="answer-line">
             <span>Your answer: <b>${pick !== undefined ? esc(q.o[pick]) : 'Not answered'}</b></span>
-            <span>Correct answer: <b style="color:var(--ok)">${esc(q.o[q.a])}</b></span>
+            <span>Correct answer: <b style="color:var(--ok)">${keyText}</b></span>
           </div>
         </div>
       </details>`;
@@ -1683,6 +1706,7 @@ function renderReport() {
           </summary>
           <div class="review-body">
             <div>${esc(q.ps || '')}</div>
+            ${specBlocks(q)}
             <div class="answer-line">
               <span>Marks: <b>${res ? round1((res.passedCount / res.total) * MARKS[sec]) : 0} / ${MARKS[sec]}</b></span>
             </div>

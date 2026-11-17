@@ -714,6 +714,10 @@ body.resizing iframe {
   color: var(--text);
   font-weight: 700;
 }
+.q-text.q-spec {
+  font-size: 14.5px;
+  margin-bottom: 14px;
+}
 .q-text code {
   font-family: var(--mono);
   font-size: 0.9em;
@@ -2103,7 +2107,9 @@ table.tc-table .fail {
     font-size: 13px;
   }
   .workspace {
-    grid-template-columns: minmax(0, 1fr);
+    /* the inline 3-column split set by the resizer would otherwise win and
+       squeeze the editor into the 10px handle column on narrow screens */
+    grid-template-columns: minmax(0, 1fr) !important;
     padding: 10px;
     gap: 10px;
   }

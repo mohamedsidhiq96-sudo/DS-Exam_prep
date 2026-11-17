@@ -30,7 +30,7 @@ const DB = {
         "o": [
           "O(1)",
           "O(log n)",
-          "O(n\u00b2)",
+          "O(n²)",
           "O(n)"
         ],
         "a": 3
@@ -96,7 +96,7 @@ const DB = {
         "o": [
           "O(n)",
           "O(log n)",
-          "O(n\u00b2)",
+          "O(n²)",
           "O(1)"
         ],
         "a": 3
@@ -616,12 +616,15 @@ const DB = {
             "input": "1\n100\n2 200\n",
             "expected": "Updated List: 100 200"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of elements currently in the list.\n\nThe second line of input consists of n space-separated integers representing the elements of the list.\n\nThe third line of input consists of two space-separated integers pos and value, representing the position (counted from 1) at which to insert and the value to be inserted.",
+        "outFmt": "The first line of output prints \"Updated List: \" followed by the elements of the updated list separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ pos ≤ n + 1\n-1000 ≤ elements[i], value ≤ 1000"
       },
       {
         "id": "u1_c2",
         "title": "Q2. Delete a Node from a Singly Linked List",
-        "ps": "Kavya works on a railway booking system that keeps the booked seat numbers of a coach in a singly linked list. When a passenger cancels, the first node holding that passenger's seat number has to be removed while the order of other nodes stays the same. If the key is not present, report 'Key Not Found'.",
+        "ps": "Kavya works on a railway booking system that keeps the booked seat numbers of a coach in a singly linked list, in the order the bookings were made. When a passenger cancels, the first node holding that passenger's seat number has to be removed from the list while the order of all other nodes stays the same.\n\nWrite a program that builds the singly linked list from the given seat numbers, deletes the first node whose value equals the given key, and prints the remaining list. If the key is not present, report that it was not found.\n\nNote: Use the malloc() function to allocate memory for the nodes of the list.",
         "sampleIn": "3\n15 25 35\n25",
         "sampleOut": "Updated List: 15 35",
         "hidden": [
@@ -678,12 +681,15 @@ const DB = {
             "input": "1\n9\n9\n",
             "expected": "Updated List: Empty"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of seat numbers in the list.\n\nThe second line of input consists of n space-separated integers representing the seat numbers in booking order.\n\nThe third line of input consists of an integer key representing the seat number to be removed.",
+        "outFmt": "If the key is found, the first line of output prints \"Updated List: \" followed by the remaining seat numbers separated by spaces, or the string \"Empty\" if no node remains.\n\nIf the key is not found, the first line of output prints the string \"Key Not Found\".",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ seat numbers[i], key ≤ 1000"
       },
       {
         "id": "u1_c3",
         "title": "Q3. Print a Doubly Linked List in Reverse Order",
-        "ps": "Aarav is developing a music player that stores the song IDs of a playlist in a doubly linked list. Build the doubly linked list from the given song IDs by adding each new node at the end, and then print the song IDs in reverse order starting at the last node and following previous pointers.",
+        "ps": "Aarav is developing a music player that stores the song IDs of a playlist in a doubly linked list, where every node knows both the node before it and the node after it. One of the features he wants to add is a \"play in reverse\" button that goes through the playlist from the last song back to the first.\n\nWrite a program that builds the doubly linked list from the given song IDs by adding each new node at the end, and then prints the song IDs in reverse order by starting at the last node and following the previous pointers.\n\nNote: Use the malloc() function to allocate memory for the nodes of the list.",
         "sampleIn": "3\n8 16 24",
         "sampleOut": "Reverse Order: 24 16 8",
         "hidden": [
@@ -740,12 +746,15 @@ const DB = {
             "input": "6\n7 7 8 8 9 9\n",
             "expected": "Reverse Order: 9 9 8 8 7 7"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of songs in the playlist.\n\nThe second line of input consists of n space-separated integers representing the song IDs in playlist order.",
+        "outFmt": "The first line of output prints \"Reverse Order: \" followed by the song IDs from the last node to the first node separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n-1000 ≤ song IDs[i] ≤ 1000"
       },
       {
         "id": "u1_c4",
         "title": "Q4. Addition of Two Polynomials Using Arrays",
-        "ps": "Priya is preparing a physics lab report in which two motion equations are written as polynomials. Each polynomial is stored using an array-based Polynomial ADT, where the index is the exponent and the value is the coefficient. Read two polynomials and add them.",
+        "ps": "Priya is preparing a physics lab report in which two motion equations are written as polynomials. Each polynomial is stored using an array-based Polynomial ADT, where the position of a value in the array is the exponent and the value itself is the coefficient of that exponent.\n\nWrite a program that reads two such polynomials and adds them. The coefficient of the result at exponent i is the coefficient of the first polynomial at exponent i plus the coefficient of the second polynomial at exponent i, and a missing exponent counts as 0.",
         "sampleIn": "1\n1 1\n1\n2 2",
         "sampleOut": "Sum Polynomial: 3 3",
         "hidden": [
@@ -802,7 +811,10 @@ const DB = {
             "input": "1\n2 3\n4\n1 1 1 1 1\n",
             "expected": "Sum Polynomial: 3 4 1 1 1"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer d1 representing the degree of the first polynomial.\n\nThe second line of input consists of d1 + 1 space-separated integers representing the coefficients of the first polynomial from exponent 0 up to exponent d1.\n\nThe third line of input consists of an integer d2 representing the degree of the second polynomial.\n\nThe fourth line of input consists of d2 + 1 space-separated integers representing the coefficients of the second polynomial from exponent 0 up to exponent d2.",
+        "outFmt": "The first line of output prints \"Sum Polynomial: \" followed by the coefficients of the resulting polynomial from exponent 0 up to the larger of d1 and d2, separated by spaces.",
+        "cons": "0 ≤ d1, d2 ≤ 50\n-100 ≤ coefficients ≤ 100"
       }
     ]
   },
@@ -1366,7 +1378,7 @@ const DB = {
       {
         "id": "u2_c1",
         "title": "Q1. BALANCED BRACKETS USING STACK",
-        "ps": "Nikhil is building a small code editor and wants it to warn the programmer whenever the brackets in a line of code are not properly balanced. Write a program that reads a string of brackets and prints 'Balanced' or 'Not Balanced'.",
+        "ps": "Nikhil is building a small code editor and wants it to warn the programmer whenever the brackets in a line of code are not properly balanced. A line is balanced when every opening bracket has a matching closing bracket of the same kind, and the brackets are closed in the correct order.\n\nWrite a program that reads a string made only of the symbols (, ), [, ], {, and } and uses a stack to decide whether the brackets are balanced. Push every opening bracket onto the stack, and for every closing bracket, check that the top of the stack holds its matching opening bracket before removing it.",
         "sampleIn": "(())",
         "sampleOut": "Balanced",
         "hidden": [
@@ -1423,12 +1435,15 @@ const DB = {
             "input": ")(\n",
             "expected": "Not Balanced"
           }
-        ]
+        ],
+        "inFmt": "The first line contains a string s representing the bracket sequence with no spaces.",
+        "outFmt": "Print \"Balanced\" if the brackets in s are balanced, or \"Not Balanced\" otherwise.",
+        "cons": "1 ≤ length of s ≤ 100\ns contains only the characters ( ) [ ] { }"
       },
       {
         "id": "u2_c2",
         "title": "Q2. EVALUATE POSTFIX EXPRESSION USING STACK",
-        "ps": "Write a program that reads a postfix expression made of single-digit operands and operators +, -, *, /, and evaluates it using a stack. Print 'Result: ' followed by the result.",
+        "ps": "Meena is writing the calculator module of a billing machine. The module receives each arithmetic expression in postfix form, where the operator is written after its two operands, because postfix expressions need no brackets and are easy to evaluate with a stack.\n\nWrite a program that reads a postfix expression made of single-digit operands and the operators +, -, *, and /, and evaluates it using a stack. Scan the expression from left to right: push every operand, and for every operator pop the top two values, apply the operator with the earlier popped value as the right operand, and push the result back.\n\nNote: The division operator performs integer division, truncating the result toward zero.",
         "sampleIn": "45*",
         "sampleOut": "Result: 20",
         "hidden": [
@@ -1485,12 +1500,15 @@ const DB = {
             "input": "234*+\n",
             "expected": "Result: 14"
           }
-        ]
+        ],
+        "inFmt": "The first line contains a string s representing the postfix expression with no spaces.",
+        "outFmt": "Print \"Result: \" followed by an integer representing the value of the expression.",
+        "cons": "1 ≤ length of s ≤ 50\ns is a valid postfix expression containing the digits 0 to 9 and the operators + - * /\nNo division by zero occurs in the test cases.\nEvery intermediate and final result fits in a 32-bit signed integer."
       },
       {
         "id": "u2_c3",
         "title": "Q3. CIRCULAR QUEUE IMPLEMENTATION",
-        "ps": "Process a list of operations on a circular queue of capacity c. Operation 1 x enqueues x (or 'Queue is full'). Operation 2 dequeues (or 'Queue is empty'). Print remaining queue elements at the end.",
+        "ps": "Farhan manages a ticket counter at a small cinema where customers collect numbered tokens and wait in a queue. The waiting area has room for only a fixed number of tokens, so he stores them in a circular queue, where the position after the last slot of the array wraps back to the first slot, and freed slots at the front can be reused.\n\nWrite a program that processes a list of operations on a circular queue of a given capacity. Operation 1 followed by a token number adds the token at the rear, and operation 2 removes the token at the front. Report every attempt that fails, and print the contents of the queue at the end.",
         "sampleIn": "2\n3\n1 7\n1 8\n2",
         "sampleOut": "Dequeued: 7\nQueue: 8",
         "hidden": [
@@ -1547,12 +1565,15 @@ const DB = {
             "input": "4\n4\n1 9\n2\n2\n1 8\n",
             "expected": "Dequeued: 9\nQueue is empty\nQueue: 8"
           }
-        ]
+        ],
+        "inFmt": "The first line contains an integer c representing the capacity of the circular queue.\n\nThe second line contains an integer m representing the number of operations.\n\nEach of the next m lines consists of either two space-separated integers \"1 x\", representing an insertion of the token number x, or a single integer \"2\", representing a removal from the front.",
+        "outFmt": "For every insertion attempted when the queue is full, print \"Queue is full\". A successful insertion prints nothing.\n\nFor every removal, print \"Dequeued: \" followed by the removed token number, or \"Queue is empty\" if there is no token to remove.\n\nThe last line prints \"Queue: \" followed by the tokens from front to rear separated by spaces, or \"Queue: Empty\" if the queue has no tokens.",
+        "cons": "1 ≤ c ≤ 100\n1 ≤ m ≤ 50\n1 ≤ x ≤ 1000"
       },
       {
         "id": "u2_c4",
         "title": "Q4. DOUBLE-ENDED QUEUE (DEQUE) IMPLEMENTATION",
-        "ps": "Process deque operations: 1 x = insert front, 2 x = insert rear, 3 = delete front, 4 = delete rear. Print deletion result or 'Deque is empty', and print final deque elements.",
+        "ps": "Imran runs the order desk of a busy bakery. Urgent orders are added at the front of the order line, regular orders are added at the rear, and the kitchen may take the next order from either end depending on how busy the two ovens are. This is exactly the behaviour of a double-ended queue (deque).\n\nWrite a program that processes a list of deque operations. Operation 1 followed by an order number inserts it at the front, operation 2 followed by an order number inserts it at the rear, operation 3 deletes the order at the front, and operation 4 deletes the order at the rear. Report every deletion, and print the contents of the deque at the end.",
         "sampleIn": "4\n1 7\n2 8\n3\n2 9",
         "sampleOut": "Deleted: 7\nDeque: 8 9",
         "hidden": [
@@ -1609,7 +1630,10 @@ const DB = {
             "input": "7\n1 1\n1 2\n1 3\n4\n4\n4\n4\n",
             "expected": "Deleted: 1\nDeleted: 2\nDeleted: 3\nDeque is empty\nDeque: Empty"
           }
-        ]
+        ],
+        "inFmt": "The first line contains an integer m representing the number of operations.\n\nEach of the next m lines consists of either two space-separated integers \"1 x\" or \"2 x\", representing an insertion of the order number x at the front or at the rear, or a single integer \"3\" or \"4\", representing a deletion from the front or from the rear.",
+        "outFmt": "For every deletion, print \"Deleted: \" followed by the removed order number, or \"Deque is empty\" if there is no order to delete.\n\nThe last line prints \"Deque: \" followed by the order numbers from front to rear separated by spaces, or \"Deque: Empty\" if the deque has no orders.",
+        "cons": "1 ≤ m ≤ 50\n1 ≤ x ≤ 1000"
       }
     ]
   },
@@ -2173,7 +2197,7 @@ const DB = {
       {
         "id": "u3_c1",
         "title": "Q1. TREE TRAVERSALS USING ARRAY REPRESENTATION",
-        "ps": "Employee IDs are stored level by level in a complete binary tree in an array (node at i has left at 2i+1, right at 2i+2). Print Preorder, Inorder, and Postorder traversals.",
+        "ps": "Dr. Anita maintains the reporting hierarchy of a college department as a complete binary tree. The employee IDs are stored level by level in an array, so the node at index i has its left child at index 2i + 1 and its right child at index 2i + 2, provided those indices are less than the number of nodes.\n\nWrite a program that reads the array and prints the preorder (root, left, right), inorder (left, root, right), and postorder (left, right, root) traversals of the tree, using recursion on the array indices.",
         "sampleIn": "4\n15 10 20 5",
         "sampleOut": "Preorder: 15 10 5 20\nInorder: 5 10 15 20\nPostorder: 5 10 20 15",
         "hidden": [
@@ -2230,12 +2254,15 @@ const DB = {
             "input": "5\n1 2 3 4 5\n",
             "expected": "Preorder: 1 2 4 5 3\nInorder: 4 2 5 1 3\nPostorder: 4 5 2 3 1"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of nodes in the tree.\n\nThe second line of input consists of n space-separated integers representing the node values stored level by level, starting with the root at index 0.",
+        "outFmt": "The first line of output prints \"Preorder: \" followed by the preorder traversal of the tree separated by spaces.\n\nThe second line of output prints \"Inorder: \" followed by the inorder traversal of the tree separated by spaces.\n\nThe third line of output prints \"Postorder: \" followed by the postorder traversal of the tree separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ node values[i] ≤ 1000"
       },
       {
         "id": "u3_c2",
         "title": "Q2. INSERT ELEMENTS INTO A MIN-HEAP",
-        "ps": "Write a program that inserts given priorities into an initially empty min-heap one by one and restores heap order upwards. Print the resulting array.",
+        "ps": "Tarun is designing a help desk where every support ticket carries a priority number, and a smaller number means a more urgent ticket. The tickets are kept in a binary min-heap stored in an array, so that the most urgent ticket is always at index 0.\n\nWrite a program that inserts the given priorities into an initially empty min-heap one by one. Each new value is placed at the end of the array and then moved up: while its parent is larger, swap it with the parent. The parent of the element at index i is at index (i - 1) / 2 using integer division. Print the array after all insertions.",
         "sampleIn": "4\n12 7 3 9",
         "sampleOut": "Min-Heap: 3 9 7 12",
         "hidden": [
@@ -2292,12 +2319,15 @@ const DB = {
             "input": "6\n10 20 30 40 50 60\n",
             "expected": "Min-Heap: 10 20 30 40 50 60"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of tickets.\n\nThe second line of input consists of n space-separated integers representing the priorities in the order they arrive.",
+        "outFmt": "The first line of output prints \"Min-Heap: \" followed by the elements of the heap array from index 0 onwards separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ priorities[i] ≤ 1000"
       },
       {
         "id": "u3_c3",
         "title": "Q3. CONSTRUCT AN EXPRESSION TREE FROM POSTFIX EXPRESSION",
-        "ps": "Read a postfix expression and build its expression tree using a stack of tree nodes. Print the fully parenthesized infix expression via inorder traversal.",
+        "ps": "Lavanya is teaching a compiler design lab and wants to show her students how a postfix expression turns into an expression tree. In an expression tree, every leaf holds an operand and every internal node holds an operator whose left and right children are its two operands.\n\nWrite a program that reads a postfix expression and builds its expression tree using a stack of tree nodes: push a new node for every operand, and for every operator create a node, make the top of the stack its right child, the next one its left child, and push it back. Finally, print the expression in infix form by an inorder traversal, wrapping every operator node and its two operands in a pair of parentheses. A single operand is printed without parentheses.\n\nNote: Use the malloc() function to allocate memory for the nodes of the tree.",
         "sampleIn": "xy-",
         "sampleOut": "Infix Expression: (x-y)",
         "hidden": [
@@ -2354,12 +2384,15 @@ const DB = {
             "input": "a\n",
             "expected": "Infix Expression: a"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of a string s representing the postfix expression with no spaces.",
+        "outFmt": "The first line of output prints \"Infix Expression: \" followed by the fully parenthesized infix form of the expression.",
+        "cons": "1 ≤ length of s ≤ 50\ns is a valid postfix expression containing lowercase letters as operands and the operators + - * /"
       },
       {
         "id": "u3_c4",
         "title": "Q4. SEARCH FOR A KEY IN A BINARY SEARCH TREE AND FIND ITS DEPTH",
-        "ps": "Build a BST from given distinct IDs and search for key. If key is present, print 'Found at depth d' (root is depth 0). If not present, print 'Not Found'.",
+        "ps": "Suresh organises the digital catalogue of a library in a binary search tree of book IDs. Each book ID is inserted in the order it was received: an ID smaller than the current node goes to the left subtree, and an ID larger than the current node goes to the right subtree. All book IDs in the catalogue are different.\n\nWrite a program that builds the binary search tree from the given IDs and then searches for a given key starting from the root. The depth of a node is the number of edges on the path from the root to that node, so the root has depth 0. If the key is in the tree, print its depth, otherwise report that it was not found.\n\nNote: Use the malloc() function to allocate memory for the nodes of the tree.",
         "sampleIn": "5\n30 20 40 10 25\n25",
         "sampleOut": "Found at depth 2",
         "hidden": [
@@ -2416,7 +2449,10 @@ const DB = {
             "input": "6\n10 20 30 40 50 60\n60\n",
             "expected": "Found at depth 5"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of book IDs.\n\nThe second line of input consists of n space-separated integers representing the book IDs in the order they are inserted.\n\nThe third line of input consists of an integer key representing the book ID to search for.",
+        "outFmt": "If the key is present, the first line of output prints \"Found at depth \" followed by an integer representing the depth of the node holding the key.\n\nIf the key is not present, the first line of output prints the string \"Not Found\".",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ book IDs[i], key ≤ 1000\nAll book IDs are distinct."
       }
     ]
   },
@@ -2550,7 +2586,7 @@ const DB = {
         "o": [
           "O(n)",
           "O(log n)",
-          "O(n\u00b2)",
+          "O(n²)",
           "O(n + e)"
         ],
         "a": 2
@@ -2622,7 +2658,9 @@ const DB = {
           "1 1 1 1",
           "0 1 1 2"
         ],
-        "a": 1
+        "a": -1,
+        "ansText": "0 1 2 0",
+        "ansNote": "The answer key prints \"0 1 2 0\", which is not one of the four options. This question is scored as a bonus when answered."
       },
       {
         "id": "u4_m19",
@@ -2980,7 +3018,7 @@ const DB = {
       {
         "id": "u4_c1",
         "title": "Q1. BREADTH-FIRST SEARCH (BFS)",
-        "ps": "Write a program that performs a breadth-first traversal from a starting vertex using a queue on an undirected graph and prints visited vertices in order. Visit unvisited neighbours in increasing numeric order.",
+        "ps": "Divya is a student coordinator who forwards an announcement through a friendship network. The students are numbered from 0 to v - 1, and two friends can pass the message to each other, so the network is an undirected graph.\n\nWrite a program that performs a breadth-first traversal from the given starting student using a queue and prints the students in the order they receive the message. When a student has several unvisited friends, visit them in increasing order of their number. Students who cannot be reached from the starting student are not printed.",
         "sampleIn": "4 3\n0 1\n0 2\n2 3\n0",
         "sampleOut": "BFS Order: 0 1 2 3",
         "hidden": [
@@ -3037,12 +3075,15 @@ const DB = {
             "input": "6 3\n0 1\n2 3\n4 5\n2\n",
             "expected": "BFS Order: 2 3"
           }
-        ]
+        ],
+        "inFmt": "The first line contains two space-separated integers v and e, representing the number of students and friendships.\n\nThe next e lines contain two integers a and b, representing a friendship between students a and b.\n\nThe last line contains an integer s, representing the starting student.",
+        "outFmt": "Print \"BFS Order: \" followed by the visited students separated by spaces.",
+        "cons": "1 <= v <= 10\n0 <= e <= v * (v - 1) / 2\n0 <= a, b, s < v\nThere are no self-loops or repeated friendships."
       },
       {
         "id": "u4_c2",
         "title": "Q2. ADJACENCY MATRIX OF AN UNDIRECTED GRAPH",
-        "ps": "Write a program that reads the number of vertices and edges and prints the adjacency matrix of the undirected graph.",
+        "ps": "Ishaan is mapping the two-way roads between villages in a district. The villages are numbered from 0 to v - 1, and every road connects two villages in both directions.\n\nWrite a program that reads the number of villages and roads and prints the adjacency matrix. The entry at row i and column j is 1 if a road exists between village i and village j; otherwise, it is 0.",
         "sampleIn": "3 2\n0 1\n1 2",
         "sampleOut": "0 1 0\n1 0 1\n0 1 0",
         "hidden": [
@@ -3099,12 +3140,15 @@ const DB = {
             "input": "4 6\n0 1\n0 2\n0 3\n1 2\n1 3\n2 3\n",
             "expected": "0 1 1 1\n1 0 1 1\n1 1 0 1\n1 1 1 0"
           }
-        ]
+        ],
+        "inFmt": "The first line contains two space-separated integers v and e, representing the number of villages and roads.\n\nThe next e lines contain two integers a and b, representing a road between villages a and b.",
+        "outFmt": "Print v lines, each containing v space-separated integers representing the adjacency matrix.",
+        "cons": "1 <= v <= 10\n0 <= e <= v * (v - 1) / 2\n0 <= a, b < v\nThere are no self-loops or repeated roads."
       },
       {
         "id": "u4_c3",
         "title": "Q3. DEPTH-FIRST SEARCH (DFS)",
-        "ps": "Write a program that performs a depth-first traversal from a starting junction on a directed graph. Always visit the smallest-numbered unvisited junction first.",
+        "ps": "Gokul is testing the navigation module of a delivery app in a city that has only one-way roads. The junctions are numbered from 0 to v - 1, and a road from a to b can be travelled only from a to b.\n\nWrite a program that performs a depth-first traversal from the given starting junction. Always visit the smallest-numbered unvisited junction reachable by a road first. Junctions that cannot be reached from the starting junction are not printed.",
         "sampleIn": "4 4\n0 1\n0 2\n1 3\n2 3\n0",
         "sampleOut": "DFS Order: 0 1 3 2",
         "hidden": [
@@ -3161,12 +3205,15 @@ const DB = {
             "input": "4 3\n1 0\n2 0\n3 0\n1\n",
             "expected": "DFS Order: 1 0"
           }
-        ]
+        ],
+        "inFmt": "The first line contains two space-separated integers v and e, representing the number of junctions and one-way roads.\n\nThe next e lines contain two integers a and b, representing a directed edge from a to b.\n\nThe last line contains an integer s, representing the starting junction.",
+        "outFmt": "Print \"DFS Order: \" followed by the visited junctions separated by spaces.",
+        "cons": "1 <= v <= 10\n0 <= e <= v * (v - 1)\n0 <= a, b, s < v\nThere are no self-loops or repeated roads."
       },
       {
         "id": "u4_c4",
         "title": "Q4. CHECK WHETHER AN EULER CIRCUIT EXISTS",
-        "ps": "A connected undirected graph has an Euler circuit if and only if every vertex has an even degree. Print 'Euler Circuit Exists' or 'Euler Circuit Does Not Exist'.",
+        "ps": "Hema is planning the route of a street-cleaning truck in a small town. The truck must start at a junction, travel through every street exactly once, and return to its starting junction. This route is called an Euler circuit.\n\nA connected undirected graph has an Euler circuit if and only if every vertex has an even degree.\n\nWrite a program that determines whether an Euler circuit exists.",
         "sampleIn": "4 4\n0 1\n1 2\n2 3\n3 0",
         "sampleOut": "Euler Circuit Exists",
         "hidden": [
@@ -3223,7 +3270,10 @@ const DB = {
             "input": "4 6\n0 1\n0 2\n0 3\n1 2\n1 3\n2 3\n",
             "expected": "Euler Circuit Does Not Exist"
           }
-        ]
+        ],
+        "inFmt": "The first line contains two space-separated integers v and e, representing the number of junctions and streets.\n\nThe next e lines contain two integers a and b, representing an undirected street between junctions a and b.",
+        "outFmt": "Print \"Euler Circuit Exists\" if every vertex has an even degree.\n\nOtherwise, print \"Euler Circuit Does Not Exist\".",
+        "cons": "3 <= v <= 10\nv - 1 <= e <= v * (v - 1) / 2\n0 <= a, b < v\nThe graph is connected, with no self-loops or repeated streets."
       }
     ]
   },
@@ -3276,7 +3326,7 @@ const DB = {
       },
       {
         "id": "u5_m5",
-        "q": "When does quick sort take O(n\u00b2) time if the first element is always chosen as the pivot?",
+        "q": "When does quick sort take O(n²) time if the first element is always chosen as the pivot?",
         "o": [
           "When the array is in random order",
           "When the array has fewer than ten elements",
@@ -3292,7 +3342,7 @@ const DB = {
           "O(1)",
           "O(n)",
           "O(log n)",
-          "O(n\u00b2)"
+          "O(n²)"
         ],
         "a": 1
       },
@@ -3312,7 +3362,7 @@ const DB = {
         "q": "What is the best-case time complexity of insertion sort, which occurs when the array is already sorted?",
         "o": [
           "O(n)",
-          "O(n\u00b2)",
+          "O(n²)",
           "O(log n)",
           "O(n log n)"
         ],
@@ -3334,7 +3384,7 @@ const DB = {
         "q": "What is the time complexity of merge sort in the best, average and worst cases?",
         "o": [
           "O(n log n)",
-          "O(n\u00b2)",
+          "O(n²)",
           "O(log n)",
           "O(n)"
         ],
@@ -3405,7 +3455,7 @@ const DB = {
           "5 2",
           "6 2"
         ],
-        "a": 0
+        "a": 2
       },
       {
         "id": "u5_m17",
@@ -3441,7 +3491,7 @@ const DB = {
           "12 25 64 22 11",
           "11 12 25 22 64"
         ],
-        "a": 0
+        "a": 3
       },
       {
         "id": "u5_m20",
@@ -3453,7 +3503,7 @@ const DB = {
           "-1 -1 12 7 22",
           "7 -1 12 22 -1"
         ],
-        "a": 2
+        "a": 0
       }
     ],
     "debug": [
@@ -3787,7 +3837,7 @@ const DB = {
       {
         "id": "u5_c1",
         "title": "Q1. BINARY SEARCH ON SORTED ARRAY",
-        "ps": "Write a program that reads sorted roll numbers and a key, and finds the index of the key using binary search. If key is present, print 'Found at index X'. If not present, print 'Not Found'.",
+        "ps": "Mohan is a lab assistant who keeps the roll numbers of the students present in a practical session in a sorted list. To find a particular student quickly, he does not want to check every roll number one by one, but wants to use binary search, which repeatedly halves the part of the list that can still contain the key.\n\nWrite a program that reads the sorted roll numbers and a key, and finds the position of the key using binary search. Keep two indices low and high, starting at 0 and n - 1, and compute the middle index as mid = low + (high - low) / 2 using integer division. If the middle element equals the key you are done, if it is smaller continue in the right half, and otherwise continue in the left half.",
         "sampleIn": "5\n3 6 9 12 15\n12",
         "sampleOut": "Found at index 3",
         "hidden": [
@@ -3844,12 +3894,15 @@ const DB = {
             "input": "7\n1 3 5 7 9 11 13\n8\n",
             "expected": "Not Found"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of roll numbers.\n\nThe second line of input consists of n space-separated integers representing the roll numbers in ascending order.\n\nThe third line of input consists of an integer key representing the roll number to search for.",
+        "outFmt": "If the key is present, the first line of output prints \"Found at index \" followed by the index of the key, where the first element has index 0.\n\nIf the key is not present, the first line of output prints the string \"Not Found\".\n\nRefer to the sample output for the formatting specifications.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ roll numbers[i], key ≤ 10000\nThe roll numbers are distinct and given in ascending order."
       },
       {
         "id": "u5_c2",
         "title": "Q2. BUBBLE SORT WITH SWAP COUNT",
-        "ps": "Write a program that sorts marks in ascending order using bubble sort, counts the total number of swaps performed, and prints the count along with the sorted marks.",
+        "ps": "Pooja is a teacher who wants to show her class how much work bubble sort does on a list of exam marks. Bubble sort makes repeated passes over the list. In every pass it compares each pair of neighbouring marks and swaps them when the left mark is greater than the right mark, so that the largest remaining mark moves to the end of the unsorted part.\n\nWrite a program that sorts the marks in ascending order using bubble sort, counts the total number of swaps performed while sorting, and prints the count along with the sorted marks.",
         "sampleIn": "5\n3 2 5 1 4",
         "sampleOut": "Total Swaps: 5\nSorted Array: 1 2 3 4 5",
         "hidden": [
@@ -3906,12 +3959,15 @@ const DB = {
             "input": "6\n5 1 4 2 8 3\n",
             "expected": "Total Swaps: 7\nSorted Array: 1 2 3 4 5 8"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of marks.\n\nThe second line of input consists of n space-separated integers representing the marks.",
+        "outFmt": "The first line of output prints \"Total Swaps: \" followed by an integer representing the number of swaps performed.\n\nThe second line of output prints \"Sorted Array: \" followed by the marks in ascending order separated by spaces.\n\nRefer to the sample output for the formatting specifications.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ marks[i] ≤ 1000"
       },
       {
         "id": "u5_c3",
         "title": "Q3. QUICK SORT SINGLE PARTITION STEP",
-        "ps": "Write a program that performs a single partition step using the last element as the pivot. Print the final index of the pivot and the rearranged array.",
+        "ps": "Rakesh is studying quick sort and wants to see exactly what the first partition step does to a list of product prices. In quick sort, one element is chosen as the pivot and the list is rearranged so that the pivot reaches its final sorted position, with smaller or equal elements before it and larger elements after it.\n\nWrite a program that performs a single partition step using the last element as the pivot. Keep an index i starting at -1, and for every index j from 0 to n - 2, if a[j] is less than or equal to the pivot, increase i by one and swap a[i] with a[j]. After the loop, swap a[i + 1] with the last element, so the pivot ends at index i + 1. Print the pivot index and the rearranged array.",
         "sampleIn": "5\n7 2 9 4 5",
         "sampleOut": "Pivot Index: 2\nArray After Partition: 2 4 5 7 9",
         "hidden": [
@@ -3968,12 +4024,15 @@ const DB = {
             "input": "6\n9 7 5 11 12 2\n",
             "expected": "Pivot Index: 0\nArray After Partition: 2 7 5 11 12 9"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of an integer n representing the number of prices.\n\nThe second line of input consists of n space-separated integers representing the prices.",
+        "outFmt": "The first line of output prints \"Pivot Index: \" followed by an integer representing the final index of the pivot.\n\nThe second line of output prints \"Array After Partition: \" followed by the elements of the rearranged array separated by spaces.\n\nRefer to the sample output for the formatting specifications.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ prices[i] ≤ 1000"
       },
       {
         "id": "u5_c4",
         "title": "Q4. HASH TABLE WITH LINEAR PROBING",
-        "ps": "The table has m slots (0 to m-1) initialized to -1. The hash function is k mod m. Resolve collisions using linear probing. Print the final hash table.",
+        "ps": "Vimal is building a quick lookup table for the student IDs of a coaching centre. The table is an array with m slots numbered 0 to m - 1, and every empty slot holds the value -1. The hash function maps an ID k to the slot k mod m, where mod is the remainder after division.\n\nWhen the slot given by the hash function is already occupied, open addressing with linear probing is used: try the next slot (index + 1) mod m, then the one after that, and so on until an empty slot is found. Write a program that inserts the given IDs into the table in the given order and prints the final table.",
         "sampleIn": "10 4\n21 31 41 11",
         "sampleOut": "Hash Table: -1 21 31 41 11 -1 -1 -1 -1 -1",
         "hidden": [
@@ -4030,7 +4089,10 @@ const DB = {
             "input": "3 1\n5\n",
             "expected": "Hash Table: -1 -1 5"
           }
-        ]
+        ],
+        "inFmt": "The first line of input consists of two space-separated integers m and n representing the number of slots in the table and the number of IDs to insert.\n\nThe second line of input consists of n space-separated integers representing the student IDs in the order they are inserted.",
+        "outFmt": "The first line of output prints \"Hash Table: \" followed by the m slot values from slot 0 to slot m - 1 separated by spaces, using -1 for an empty slot.\n\nRefer to the sample output for the formatting specifications.",
+        "cons": "1 ≤ m ≤ 100\n1 ≤ n ≤ m\n0 ≤ student IDs[i] ≤ 10000\nAll student IDs are distinct."
       }
     ]
   }
