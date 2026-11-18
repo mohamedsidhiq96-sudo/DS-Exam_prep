@@ -1014,7 +1014,7 @@ function mountEditor(key) {
     // switched off with `explode: ''`, so Enter never splits a "{}" pair into
     // three lines and never leaves a stray "}" behind. Enter is bound below
     // to newlineAndIndent, which is exactly one newline.
-    autoCloseBrackets: { pairs: '()[]{}' + "''" + '""', explode: '' },
+    autoCloseBrackets: { pairs: '()[]{}' + "''" + '""', explode: '[]{}' },
     indentUnit: 4,
     tabSize: 4,
     indentWithTabs: false,
