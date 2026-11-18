@@ -1001,11 +1001,11 @@ function mountEditor(key) {
     theme: state.editorTheme === 'light' ? 'default' : 'dracula',
     lineNumbers: true,
     matchBrackets: true,
-    // Auto-pairing is deliberately OFF: the addon's Enter handler splits a
-    // "{}" pair into three lines, so a student who types their own closing
-    // brace ends up with "{}" + "}" jammed on one line ("...{}.}").
-    // One Enter = one newline is the only behaviour we want here.
-    autoCloseBrackets: false,
+    // Auto-pairing is ON for ( [ { " ' but the addon's Enter handler is
+    // switched off with `explode: ''`, so Enter never splits a "{}" pair into
+    // three lines and never leaves a stray "}" behind. Enter is bound below
+    // to newlineAndIndent, which is exactly one newline.
+    autoCloseBrackets: { pairs: '()[]{}' + "''" + '""', explode: '' },
     indentUnit: 4,
     tabSize: 4,
     indentWithTabs: false,
