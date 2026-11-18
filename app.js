@@ -70,7 +70,7 @@ const state = {
   split: 50,
   theme: document.documentElement.getAttribute('data-theme') || 'light',
   editorTheme: 'dark',
-  fontSize: 13
+  fontSize: 15
 };
 
 let cm = null; // live CodeMirror instance
@@ -131,7 +131,7 @@ function firstSection() {
 }
 
 function tagQuestion(unitKey, sec, index) {
-  return { ...DB[unitKey][sec][index], _unit: unitKey, _ref: index };
+  return Object.assign({}, DB[unitKey][sec][index], { _unit: unitKey, _ref: index });
 }
 
 function buildUnitPaper(unitKey) {
@@ -162,7 +162,10 @@ function buildModelPaper() {
 
 // MCQ test: the whole objective bank (20 per unit × 5 = 100), shuffled together.
 function buildMcqTestPaper() {
-  const mcq = Object.keys(DB).flatMap((u) => DB[u].mcq.map((_, i) => tagQuestion(u, 'mcq', i)));
+  const mcq = [];
+  Object.keys(DB).forEach((u) => {
+    DB[u].mcq.forEach((_, i) => mcq.push(tagQuestion(u, 'mcq', i)));
+  });
   return { mcq: shuffled(mcq), debug: [], cod: [] };
 }
 
@@ -298,7 +301,7 @@ function applySaved(saved) {
   state.useCustom = saved.useCustom || {};
   state.split = Number.isFinite(saved.split) ? saved.split : 50;
   state.editorTheme = saved.editorTheme === 'light' ? 'light' : 'dark';
-  state.fontSize = Number.isFinite(saved.fontSize) ? saved.fontSize : 13;
+  state.fontSize = Number.isFinite(saved.fontSize) ? saved.fontSize : 15;
   if (saved.theme === 'dark' || saved.theme === 'light') setTheme(saved.theme, false);
 }
 
@@ -771,9 +774,15 @@ function codeBlock(source) {
 
 function sampleCases(q) {
   if (Array.isArray(q.samples) && q.samples.length) {
-    return q.samples.map((s) => ({ input: s.input ?? '', expected: s.expected ?? '' }));
+    return q.samples.map((s) => ({
+      input: s.input == null ? '' : s.input,
+      expected: s.expected == null ? '' : s.expected
+    }));
   }
-  return [{ input: q.sampleIn ?? '', expected: q.sampleOut ?? '' }];
+  return [{
+    input: q.sampleIn == null ? '' : q.sampleIn,
+    expected: q.sampleOut == null ? '' : q.sampleOut
+  }];
 }
 
 // The bank ships two overlapping hidden sets (hidden_cases + hidden). Use the
@@ -782,8 +791,8 @@ function hiddenCases(q) {
   const seen = new Set();
   const out = [];
   [...(q.hidden_cases || []), ...(q.hidden || [])].forEach((c) => {
-    const input = c.input ?? '';
-    const expected = c.expected ?? '';
+    const input = c.input == null ? '' : c.input;
+    const expected = c.expected == null ? '' : c.expected;
     const id = `${input}\u0000${expected}`;
     if (seen.has(id)) return;
     seen.add(id);
@@ -1136,7 +1145,7 @@ function resultMarkup(key) {
                   <td class="${c.passed ? 'pass' : 'fail'}"${
                   c.runtime ? ` title="${esc(c.runtime)}"` : ''
                 }>${c.passed ? 'Passed' : c.runtime ? 'Runtime error' : 'Wrong answer'}</td>
-                  <td>${c.timeMs ?? '—'}</td>
+                  <td>${c.timeMs == null ? '—' : c.timeMs}</td>
                 </tr>`
               )
               .join('')}
@@ -1153,7 +1162,7 @@ function resultMarkup(key) {
         (c) => `<article class="tc-card">
           <header class="${custom ? '' : c.passed ? 'pass' : 'fail'}">
             <span>${custom ? 'Custom input' : `Test case ${c.index} — ${c.passed ? 'Passed' : 'Failed'}`}</span>
-            <span>${c.timeMs ?? '—'} ms</span>
+            <span>${c.timeMs == null ? '—' : c.timeMs} ms</span>
           </header>
           ${
             c.runtime
@@ -1689,10 +1698,12 @@ const runCache = new Map();
 
 async function runSingle(program, input) {
   const cacheKey = `${program}\u0000${input}`;
-  if (runCache.has(cacheKey)) return { ...runCache.get(cacheKey) };
+  if (runCache.has(cacheKey)) return Object.assign({}, runCache.get(cacheKey));
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), JUDGE0_TIMEOUT);
+  // Old Android WebViews have no AbortController: the request still works,
+  // it just cannot be cancelled when the timeout fires.
+  const controller = typeof AbortController === 'function' ? new AbortController() : null;
+  const timeout = controller ? setTimeout(() => controller.abort(), JUDGE0_TIMEOUT) : null;
   const started = performance.now();
 
   try {
@@ -1704,7 +1715,7 @@ async function runSingle(program, input) {
         language_id: JUDGE0_LANG,
         stdin: b64encode(input || '')
       }),
-      signal: controller.signal
+      signal: controller ? controller.signal : undefined
     });
 
     if (response.status === 429) {
@@ -1744,7 +1755,7 @@ async function runSingle(program, input) {
 
     const result = { actual: stdout, timeMs, status: statusText || 'Accepted' };
     runCache.set(cacheKey, result);
-    return { ...result };
+    return Object.assign({}, result);
   } catch (err) {
     return {
       serviceError:
@@ -1753,7 +1764,7 @@ async function runSingle(program, input) {
           : 'Could not reach the online C compiler. Check the internet connection and try again.'
     };
   } finally {
-    clearTimeout(timeout);
+    if (timeout) clearTimeout(timeout);
   }
 }
 
@@ -2021,7 +2032,7 @@ function renderReport() {
   setExamChrome(false);
   $('#examMain').classList.remove('wide-palette');
   const sections = liveSections();
-  const scored = sections.map((s) => ({ ...s, ...scoreFor(s.id) }));
+  const scored = sections.map((s) => Object.assign({}, s, scoreFor(s.id)));
   const total = scored.reduce((n, s) => n + s.earned, 0);
   const max = scored.reduce((n, s) => n + s.max, 0);
   const pct = max ? Math.round((total / max) * 100) : 0;
@@ -2310,7 +2321,7 @@ function handleAction(action, dataset, el) {
       break;
     case 'font-inc':
     case 'font-dec': {
-      state.fontSize = Math.max(11, Math.min(20, state.fontSize + (action === 'font-inc' ? 1 : -1)));
+      state.fontSize = Math.max(12, Math.min(24, state.fontSize + (action === 'font-inc' ? 1 : -1)));
       if (cm) {
         cm.getWrapperElement().style.fontSize = `${state.fontSize}px`;
         cm.refresh();
@@ -2448,6 +2459,16 @@ window.addEventListener('offline', watchConnection);
 /* -------------------------------- boot --------------------------------- */
 
 window.addEventListener('DOMContentLoaded', () => {
+  if (!window.CodeMirror || typeof DB === 'undefined') {
+    const main = $('#examMain');
+    if (main) {
+      main.innerHTML =
+        '<div class="compat-notice"><strong>This browser cannot run the editor.</strong>' +
+        'Please open the portal in a recent Chrome, Edge, Firefox or Safari, ' +
+        'or update the browser on your phone or tablet.</div>';
+    }
+    return;
+  }
   const saved = readSaved();
   let theme = null;
   try {
