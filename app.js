@@ -24,6 +24,8 @@ const MODES = {
 
 const STORE_KEY = 'msec-exam-portal-v3';
 const THEME_KEY = 'msec-exam-theme';
+const DEV_KEY = 'msec-dev-unlock-v1';
+const DEV_PIN = '2007';
 const SPLIT_MIN = 30;
 const SPLIT_MAX = 70;
 
@@ -57,7 +59,13 @@ const state = {
   submit: {}, // key -> run result (hidden)
   customInput: {}, // key -> text
   useCustom: {}, // key -> bool
-  resultTab: {}, // key -> 'code' | 'result'
+  resultTab: {}, // key -> 'code' | 'result' | 'hidden'
+
+  // Secret practice-only hidden-test inspector. Unlock state is kept in its
+  // own localStorage entry so it survives reloads and restarts.
+  devOpen: devUnlocked(),
+  devRuns: {}, // key -> hidden-case run shown in the dev view
+  devInvisible: true, // render spaces/tabs/line ends visibly
 
   split: 50,
   theme: document.documentElement.getAttribute('data-theme') || 'light',
@@ -800,7 +808,9 @@ function renderCodeWorkspace() {
   const samples = sampleCases(q);
   const hidden = hiddenCases(q);
   const sub = state.submit[key];
-  const tab = state.resultTab[key] || 'code';
+  let tab = state.resultTab[key] || 'code';
+  if (tab === 'hidden' && !devTabAllowed()) tab = 'code';
+  const paneTitle = tab === 'hidden' ? 'Hidden test cases' : tab === 'result' ? 'Test results' : 'Fill your code here';
 
   $('#leftPanel').innerHTML = `
     <div class="panel-head">
@@ -843,7 +853,7 @@ function renderCodeWorkspace() {
   $('#rightPanel').innerHTML = `
     <div class="ide">
       <div class="ide-bar">
-        <span class="ide-title">${tab === 'result' ? 'Test results' : 'Fill your code here'}</span>
+        <span class="ide-title">${paneTitle}</span>
         <div class="ide-tabs" role="tablist" aria-label="Editor and results">
           <button class="ide-tool" type="button" role="tab" aria-selected="${tab === 'code'}"
                   data-action="tab-code" style="width:auto;padding:0 9px">Code</button>
@@ -851,6 +861,12 @@ function renderCodeWorkspace() {
                   data-action="tab-result" style="width:auto;padding:0 9px">
             Result${sub ? ` <span style="opacity:.75">· ${sub.passedCount}/${sub.total}</span>` : ''}
           </button>
+          ${
+            devTabAllowed()
+              ? `<button class="ide-tool" type="button" role="tab" aria-selected="${tab === 'hidden'}"
+                  data-action="tab-hidden" style="width:auto;padding:0 9px">Hidden</button>`
+              : ''
+          }
         </div>
         <span class="grow"></span>
         <span class="impl-pill">C (17)</span>
@@ -868,7 +884,7 @@ function renderCodeWorkspace() {
         </div>
       </div>
 
-      <div class="editor-shell" id="editorShell" ${tab === 'result' ? 'hidden' : ''}>
+      <div class="editor-shell" id="editorShell" ${tab !== 'code' ? 'hidden' : ''}>
         ${isDebug ? lockedRegion('Locked header code', q.header) : ''}
         <div id="editorMount" class="editor-mount"></div>
         ${isDebug ? lockedRegion('Locked driver & test cases', q.footer, true) : ''}
@@ -879,8 +895,8 @@ function renderCodeWorkspace() {
         </details>
       </div>
 
-      <div class="result-scroll" id="resultArea" ${tab === 'result' ? '' : 'hidden'}>
-        ${renderResultBody()}
+      <div class="result-scroll" id="resultArea" ${tab === 'code' ? 'hidden' : ''}>
+        ${tab === 'hidden' ? devMarkup(key) : renderResultBody()}
       </div>
     </div>`;
 
@@ -956,7 +972,10 @@ function defaultCode() {
 
 function currentCode() {
   const key = keyOf();
-  return state.codes[key] !== undefined ? state.codes[key] : defaultCode();
+  const raw = state.codes[key] !== undefined ? state.codes[key] : defaultCode();
+  // Browsers can hand us CRLF from paste/autofill; CodeMirror only counts \n as
+  // a line break, so a stray \r would make Enter look like it did nothing.
+  return String(raw).replace(/\r\n?/g, '\n');
 }
 
 function mountEditor(key) {
@@ -982,17 +1001,42 @@ function mountEditor(key) {
     theme: state.editorTheme === 'light' ? 'default' : 'dracula',
     lineNumbers: true,
     matchBrackets: true,
-    autoCloseBrackets: true,
+    // Auto-pairing is deliberately OFF: the addon's Enter handler splits a
+    // "{}" pair into three lines, so a student who types their own closing
+    // brace ends up with "{}" + "}" jammed on one line ("...{}.}").
+    // One Enter = one newline is the only behaviour we want here.
+    autoCloseBrackets: false,
     indentUnit: 4,
     tabSize: 4,
     indentWithTabs: false,
     smartIndent: true,
     lineWrapping: true,
-    viewportMargin: Infinity
+    viewportMargin: Infinity,
+    // Desktop already defaults to a plain <textarea>; mobile keeps
+    // contenteditable, which handles on-screen keyboards far better.
+    inputStyle: /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+      ? 'contenteditable'
+      : 'textarea',
+    spellcheck: false,
+    extraKeys: {
+      Enter: 'newlineAndIndent',
+      'Shift-Enter': 'newlineAndIndent',
+      'Ctrl-Enter': false,
+      'Cmd-Enter': false,
+      'Shift-Ctrl-Enter': false,
+      'Shift-Cmd-Enter': false
+    }
   });
   cm.setValue(currentCode());
   cm.setSize('100%', '100%');
   cm.getWrapperElement().style.fontSize = `${state.fontSize}px`;
+  const inputField = cm.getInputField();
+  if (inputField) {
+    inputField.setAttribute('autocorrect', 'off');
+    inputField.setAttribute('autocapitalize', 'off');
+    inputField.setAttribute('autocomplete', 'off');
+    inputField.setAttribute('spellcheck', 'false');
+  }
   cm.on('change', () => {
     state.codes[key] = cm.getValue();
     persist();
@@ -1060,7 +1104,18 @@ function resultMarkup(key) {
       }
     </div>
     <div class="result-title">Compiler message</div>
-    <div class="msg-box ${result.compileError ? 'error' : ''}">${esc(result.compileError || 'Compilation successful')}</div>`;
+    <div class="msg-box ${result.compileError ? 'error' : ''}">${esc(result.compileError || 'Compilation successful')}</div>
+    ${
+      result.cases.some((c) => c.runtime)
+        ? (() => {
+            const crash = result.cases.find((c) => c.runtime);
+            return `<div class="result-title">Runtime message</div>
+              <div class="msg-box error">${esc(
+                `${crash.runtimeLabel ? `${crash.runtimeLabel} — ` : ''}${crash.runtime}`
+              )}</div>`;
+          })()
+        : ''
+    }`;
 
   if (result.compileError) return head;
 
@@ -1078,7 +1133,9 @@ function resultMarkup(key) {
                 (c) => `<tr>
                   <td>${c.index}</td>
                   <td class="${c.passed ? 'pass' : 'fail'} tc-x">${c.passed ? '✔' : '✘'}</td>
-                  <td class="${c.passed ? 'pass' : 'fail'}">${c.passed ? 'Passed' : 'Failed'}</td>
+                  <td class="${c.passed ? 'pass' : 'fail'}"${
+                  c.runtime ? ` title="${esc(c.runtime)}"` : ''
+                }>${c.passed ? 'Passed' : c.runtime ? 'Runtime error' : 'Wrong answer'}</td>
                   <td>${c.timeMs ?? '—'}</td>
                 </tr>`
               )
@@ -1098,6 +1155,13 @@ function resultMarkup(key) {
             <span>${custom ? 'Custom input' : `Test case ${c.index} — ${c.passed ? 'Passed' : 'Failed'}`}</span>
             <span>${c.timeMs ?? '—'} ms</span>
           </header>
+          ${
+            c.runtime
+              ? `<div class="tc-run-error">${esc(
+                  `${c.runtimeLabel ? `${c.runtimeLabel} — ` : ''}${c.runtime}`
+                )}</div>`
+              : ''
+          }
           <div class="io-grid">
             <div>
               <h5>Expected output</h5>
@@ -1105,7 +1169,9 @@ function resultMarkup(key) {
             </div>
             <div>
               <h5>Your output</h5>
-              <div class="io-box ${c.actual ? '' : 'empty'}">${esc(c.actual)}</div>
+              <div class="io-box ${c.actual || c.runtime ? '' : 'empty'}">${
+          c.actual ? esc(c.actual) : c.runtime ? 'nothing printed — the program stopped' : ''
+        }</div>
             </div>
           </div>
         </article>`
@@ -1137,7 +1203,11 @@ function updateResultTabLabel() {
     tab.innerHTML = `Result${sub ? ` <span style="opacity:.75">· ${sub.passedCount}/${sub.total}</span>` : ''}`;
   }
   const title = $('#rightPanel .ide-title');
-  if (title) title.textContent = state.resultTab[key] === 'result' ? 'Test results' : 'Fill your code here';
+  if (title) {
+    const mode = state.resultTab[key];
+    title.textContent =
+      mode === 'hidden' ? 'Hidden test cases' : mode === 'result' ? 'Test results' : 'Fill your code here';
+  }
 }
 
 function showCodePane() {
@@ -1151,6 +1221,306 @@ function redrawResult() {
   const key = keyOf();
   const area = $('#resultArea');
   if (area && state.resultTab[key] === 'result') area.innerHTML = resultMarkup(key);
+}
+
+/* ---------------------------- developer view --------------------------- */
+/* Secret hidden-test inspector. Unlocked by three quick clicks on the
+   connection ribbon plus the access code. Practice mode only, viewer only:
+   it never writes to state.submit / state.compile and never scores anything. */
+
+function devUnlocked() {
+  try {
+    const raw = localStorage.getItem(DEV_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    return !!(data && data.unlocked);
+  } catch (_) {
+    return false;
+  }
+}
+
+function storeDevUnlocked(on) {
+  try {
+    if (on) localStorage.setItem(DEV_KEY, JSON.stringify({ unlocked: true, at: Date.now() }));
+    else localStorage.removeItem(DEV_KEY);
+  } catch (_) {
+    /* storage disabled — the view simply re-locks on the next reload */
+  }
+}
+
+function devTabAllowed() {
+  if (!state.devOpen) return false;
+  if (state.mode !== 'practice') return false;
+  if (state.sec !== 'cod' && state.sec !== 'debug') return false;
+  const q = sectionList()[state.index];
+  return !!q && hiddenCases(q).length > 0;
+}
+
+let devClicks = 0;
+let devClickTimer = null;
+let devRunToken = 0;
+
+function bindDevTrigger() {
+  const ribbon = $('#ribbon');
+  if (!ribbon || ribbon.dataset.devBound) return;
+  ribbon.dataset.devBound = '1';
+  ribbon.addEventListener('click', () => {
+    if (state.devOpen) return;
+    // Inside a timed exam the ribbon stays inert; on the start screen and in
+    // practice it is the hidden unlock hot-spot.
+    if (state.screen === 'exam' && state.mode !== 'practice') return;
+    devClicks += 1;
+    if (devClickTimer) clearTimeout(devClickTimer);
+    if (devClicks >= 3) {
+      devClicks = 0;
+      openDevGate();
+      return;
+    }
+    devClickTimer = setTimeout(() => {
+      devClicks = 0;
+    }, 2500);
+  });
+}
+
+function devGate() {
+  let modal = $('#devModal');
+  if (modal) return modal;
+  modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.id = 'devModal';
+  modal.dataset.open = 'false';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'devGateTitle');
+  modal.innerHTML = `
+    <div class="modal-card">
+      <h2 id="devGateTitle">Access code</h2>
+      <p>Enter the four-digit code to open the hidden test-case inspector.</p>
+      <input class="end-input" id="devCode" type="password" inputmode="numeric"
+             autocomplete="off" spellcheck="false" maxlength="4" aria-label="Access code" />
+      <div class="modal-actions">
+        <button class="btn" type="button" data-action="dev-cancel">Cancel</button>
+        <button class="btn btn-primary" type="button" data-action="dev-unlock">Unlock</button>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) closeDevGate();
+  });
+  const input = $('#devCode', modal);
+  if (input) {
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        event.stopPropagation();
+        tryDevCode();
+      }
+    });
+  }
+  return modal;
+}
+
+function openDevGate() {
+  const modal = devGate();
+  modal.dataset.open = 'true';
+  const input = $('#devCode', modal);
+  if (input) {
+    input.value = '';
+    setTimeout(() => input.focus(), 30);
+  }
+}
+
+function closeDevGate() {
+  const modal = $('#devModal');
+  if (modal) modal.dataset.open = 'false';
+}
+
+function tryDevCode() {
+  const input = $('#devCode');
+  const value = input ? input.value.trim() : '';
+  closeDevGate();
+  if (value !== DEV_PIN) return; // wrong code: closes silently
+  unlockDevView();
+}
+
+function unlockDevView() {
+  state.devOpen = true;
+  storeDevUnlocked(true);
+  toast('Hidden tests unlocked', 'ok');
+  if (state.screen === 'exam') renderWorkspace();
+}
+
+function lockDevView() {
+  state.devOpen = false;
+  state.devRuns = {};
+  storeDevUnlocked(false);
+  toast('Hidden tests locked');
+  if (state.screen === 'exam') renderWorkspace();
+}
+
+function viz(text) {
+  const raw = String(text === null || text === undefined ? '' : text).replace(/\r\n?/g, '\n');
+  if (!state.devInvisible) return esc(raw);
+  return esc(raw).replace(/ /g, '\u2420').replace(/\t/g, '\u21e5').replace(/\n/g, '\u21b5\n');
+}
+
+function cleanRuntime(text) {
+  let s = String(text === null || text === undefined ? '' : text)
+    .replace(/\r\n?/g, '\n')
+    .replace(/\s+/g, ' ')
+    .trim();
+  s = s.replace(/^run\.sh:\s*line\s*\d+:\s*/i, '').replace(/\s*\.\/a\.out\s*$/i, '');
+  if (/segmentation fault/i.test(s)) return 'segmentation fault — the program crashed';
+  if (/floating point exception/i.test(s)) return 'floating point exception — check for division by zero';
+  if (/aborted/i.test(s)) return 'aborted — the program stopped abnormally';
+  return s;
+}
+
+function diffNote(expected, actual) {
+  const want = normaliseOut(expected);
+  const got = normaliseOut(actual);
+  if (want === got) return '';
+  const e = want.split('\n');
+  const a = got.split('\n');
+  for (let i = 0; i < Math.max(e.length, a.length); i += 1) {
+    const el = e[i];
+    const al = a[i];
+    if (el === al) continue;
+    if (el === undefined) {
+      const extra = a.length - e.length;
+      return `extra output — ${extra} more line${extra === 1 ? '' : 's'} than expected, starting at line ${i + 1}`;
+    }
+    if (al === undefined) return `output ends early — line ${i + 1} is missing (expected "${el}")`;
+    let col = 0;
+    while (col < el.length && col < al.length && el[col] === al[col]) col += 1;
+    const was = el[col] === undefined ? 'end of line' : el[col];
+    const now = al[col] === undefined ? 'end of line' : al[col];
+    return `line ${i + 1}, column ${col + 1}: expected "${was}", got "${now}"`;
+  }
+  return '';
+}
+
+function whitespaceNote(expected, actual) {
+  const want = String(expected === null || expected === undefined ? '' : expected);
+  const got = String(actual === null || actual === undefined ? '' : actual);
+  if (want === got) return '';
+  if (normaliseOut(want) === normaliseOut(got)) {
+    return 'same content — differs only in spaces, tabs or blank lines';
+  }
+  return '';
+}
+
+function devCase(card) {
+  const note = card.runtime
+    ? `runtime: ${card.runtimeLabel ? `${card.runtimeLabel} — ` : ''}${cleanRuntime(card.runtime)}`
+    : diffNote(card.expected, card.actual) || whitespaceNote(card.expected, card.actual);
+  return `<article class="tc-card dev-case">
+    <header class="${card.passed ? 'pass' : 'fail'}">
+      <span>Test case ${card.index} — ${card.passed ? 'Passed' : 'Failed'}</span>
+      <span>${card.timeMs === null || card.timeMs === undefined ? '—' : `${card.timeMs} ms`}</span>
+    </header>
+    <div class="dev-block">
+      <span class="dev-label">Input</span>
+      <pre class="dev-pre">${viz(card.input) || '—'}</pre>
+    </div>
+    <div class="io-grid">
+      <div>
+        <h5>Expected output</h5>
+        <div class="io-box">${viz(card.expected) || '—'}</div>
+      </div>
+      <div>
+        <h5>Your output</h5>
+        <div class="io-box ${card.actual ? '' : 'empty'}">${viz(card.actual) || 'nothing printed'}</div>
+      </div>
+    </div>
+    ${note ? `<div class="dev-diff">${esc(note)}</div>` : ''}
+  </article>`;
+}
+
+function devMarkup(key) {
+  const q = sectionList()[state.index];
+  if (!q) return '';
+  const cases = hiddenCases(q);
+  const run = state.devRuns[key];
+  const head = `
+    <div class="result-title">Hidden tests <span class="dev-flag">DEV</span></div>
+    <div class="dev-note">Practice only · this view is not submitted and never affects marks.</div>
+    <div class="dev-actions">
+      <button class="btn btn-primary" type="button" data-action="dev-run" ${run && run.running ? 'disabled' : ''}>
+        ${run && run.running ? 'Running…' : 'Run all hidden'}
+      </button>
+      <button class="btn" type="button" data-action="dev-whitespace">
+        ${state.devInvisible ? 'Hide spaces' : 'Show spaces'}
+      </button>
+      <button class="btn" type="button" data-action="dev-lock">Lock</button>
+    </div>`;
+
+  if (!run) {
+    return `${head}
+      <div class="dev-note">
+        ${cases.length} hidden test case${cases.length === 1 ? '' : 's'} guard this question.
+        Run them to see the exact input, the expected output and what your code prints.
+      </div>`;
+  }
+  if (run.running) {
+    return `${head}
+      <div class="result-pending">
+        <div class="spinner" aria-hidden="true"></div>
+        <div><strong>Running hidden tests…</strong><br />${run.done} of ${run.total} done</div>
+        <div class="progress-line"><i style="width:${Math.round(((run.done || 0) / (run.total || 1)) * 100)}%"></i></div>
+      </div>
+      ${run.cases.map(devCase).join('')}`;
+  }
+  const passed = run.cases.filter((c) => c.passed).length;
+  return `${head}
+    <div class="result-score">${passed}/${run.total} passed <span class="of">· hidden set · not scored</span></div>
+    ${run.cases.map(devCase).join('')}`;
+}
+
+function redrawDev() {
+  const key = keyOf();
+  if (state.resultTab[key] !== 'hidden') return;
+  const area = $('#resultArea');
+  if (area) area.innerHTML = devMarkup(key);
+}
+
+async function runDevHidden() {
+  const key = keyOf();
+  const q = sectionList()[state.index];
+  if (!q) return;
+  const program = programFor(q);
+  if (!String(program).trim()) {
+    toast('Write some code first.', 'err');
+    return;
+  }
+  const cases = hiddenCases(q);
+  const token = ++devRunToken;
+  const collected = [];
+
+  state.devRuns[key] = { running: true, done: 0, total: cases.length, cases: [] };
+  redrawDev();
+
+  for (let i = 0; i < cases.length; i += 1) {
+    if (token !== devRunToken) return;
+    const item = cases[i];
+    const run = await runSingle(program, item.input || '');
+    const runtime = run.runtimeError || run.compileError || run.serviceError || '';
+    collected.push({
+      index: i + 1,
+      input: item.input || '',
+      expected: item.expected || '',
+      actual: run.actual || '',
+      runtime,
+      runtimeLabel: run.runtimeError ? run.statusText || 'runtime error' : '',
+      timeMs: run.timeMs,
+      passed: !runtime && normaliseOut(run.actual) === normaliseOut(item.expected)
+    });
+    state.devRuns[key] = { running: true, done: i + 1, total: cases.length, cases: collected.slice() };
+    redrawDev();
+  }
+
+  state.devRuns[key] = { running: false, done: cases.length, total: cases.length, cases: collected, at: Date.now() };
+  redrawDev();
 }
 
 /* ------------------------------- bottom bar ---------------------------- */
@@ -1356,10 +1726,20 @@ async function runSingle(program, input) {
       return { compileError: compileOut.trim() || 'Compilation error.' };
     }
     if (statusId === 5) {
-      return { runtimeError: 'Time limit exceeded for this input.', actual: stdout, timeMs };
+      return {
+        runtimeError: 'Time limit exceeded for this input.',
+        statusText: 'Time Limit Exceeded',
+        actual: stdout,
+        timeMs
+      };
     }
     if (statusId > 6 || (stderr && statusId > 3 && statusId !== 4)) {
-      return { runtimeError: stderr.trim() || statusText || 'Runtime error.', actual: stdout, timeMs };
+      return {
+        runtimeError: stderr.trim() || statusText || 'Runtime error.',
+        statusText: statusText || 'Runtime Error',
+        actual: stdout,
+        timeMs
+      };
     }
 
     const result = { actual: stdout, timeMs, status: statusText || 'Accepted' };
@@ -1459,6 +1839,8 @@ async function runCode({ submit = false } = {}) {
       actual: run.actual || '',
       passed,
       timeMs: run.timeMs,
+      runtime: run.runtimeError ? cleanRuntime(run.runtimeError) : '',
+      runtimeLabel: run.runtimeError ? run.statusText || 'Runtime error' : '',
       status: run.runtimeError || run.status || (passed ? 'Passed' : 'Wrong answer')
     });
 
@@ -1885,10 +2267,46 @@ function handleAction(action, dataset, el) {
         if (shell) shell.hidden = true;
         if (area) area.hidden = false;
         redrawResult();
+        const title = $('#rightPanel .ide-title');
+        if (title) title.textContent = 'Test results';
         $$('#rightPanel [role="tab"]').forEach((t) =>
           t.setAttribute('aria-selected', String(t.dataset.action === 'tab-result'))
         );
       }
+      break;
+    case 'tab-hidden':
+      if (devTabAllowed() && $('#resultArea')) {
+        state.resultTab[keyOf()] = 'hidden';
+        persist();
+        const shell = $('#editorShell');
+        const area = $('#resultArea');
+        if (shell) shell.hidden = true;
+        if (area) {
+          area.hidden = false;
+          area.innerHTML = devMarkup(keyOf());
+        }
+        const title = $('#rightPanel .ide-title');
+        if (title) title.textContent = 'Hidden test cases';
+        $$('#rightPanel [role="tab"]').forEach((t) =>
+          t.setAttribute('aria-selected', String(t.dataset.action === 'tab-hidden'))
+        );
+      }
+      break;
+    case 'dev-run':
+      runDevHidden();
+      break;
+    case 'dev-whitespace':
+      state.devInvisible = !state.devInvisible;
+      redrawDev();
+      break;
+    case 'dev-lock':
+      lockDevView();
+      break;
+    case 'dev-unlock':
+      tryDevCode();
+      break;
+    case 'dev-cancel':
+      closeDevGate();
       break;
     case 'font-inc':
     case 'font-dec': {
@@ -1976,6 +2394,7 @@ document.addEventListener('change', (event) => {
 document.addEventListener('keydown', (event) => {
   const modalOpen = $$('.modal[data-open="true"]').length > 0;
   if (event.key === 'Escape') {
+    if ($('#devModal') && $('#devModal').dataset.open === 'true') return closeDevGate();
     if ($('#submitModal').dataset.open === 'true') return closeSubmitModal();
     if ($('#legendModal').dataset.open === 'true') return ($('#legendModal').dataset.open = 'false');
   }
@@ -2043,6 +2462,7 @@ window.addEventListener('DOMContentLoaded', () => {
   if (theme === 'dark' || theme === 'light') setTheme(theme, false);
   else setTheme('light', false);
   watchConnection();
+  bindDevTrigger();
   renderStart();
 });
 

@@ -940,6 +940,7 @@ body.resizing iframe {
   font-size: 12.5px;
   font-weight: 650;
   flex: none;
+  container-type: inline-size;
 }
 .ide-bar .grow {
   margin-left: auto;
@@ -949,6 +950,26 @@ body.resizing iframe {
   font-weight: 650;
   color: #c8d4e4;
   white-space: nowrap;
+}
+/* The bar must survive three tabs on a narrow panel: the label truncates,
+   the tabs, language pill and tools keep their width. */
+.ide-bar > .ide-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ide-bar > .ide-tabs,
+.ide-bar > .impl-pill,
+.ide-bar > .ide-tools {
+  flex: 0 0 auto;
+}
+/* Narrow code panel: the tabs matter, the label and language pill do not. */
+@container (max-width: 470px) {
+  .ide-bar > .ide-title,
+  .ide-bar > .impl-pill {
+    display: none;
+  }
 }
 .ide-tools {
   display: flex;
@@ -1267,6 +1288,16 @@ body.resizing iframe {
 .tc-card > header.fail {
   color: var(--danger);
 }
+.tc-run-error {
+  margin: 10px 13px 0;
+  padding: 8px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger);
+}
 .io-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1296,6 +1327,69 @@ body.resizing iframe {
   content: "(no output)";
   color: var(--muted);
   font-style: italic;
+}
+
+/* Developer view — hidden test-case inspector (practice only) */
+.dev-flag {
+  display: inline-block;
+  margin-left: 7px;
+  padding: 1px 6px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  background: var(--accent-soft);
+  vertical-align: 1px;
+}
+.dev-note {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.dev-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.dev-block {
+  padding: 12px 13px 0;
+}
+.dev-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.dev-pre {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.55;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 8px 9px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--text-2);
+}
+.dev-diff {
+  margin: 0 13px 13px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--danger);
+  background: var(--danger-soft);
+  border: 1px solid var(--danger);
+}
+.dev-case .io-grid {
+  padding-top: 10px;
 }
 
 .tc-table-wrap {
