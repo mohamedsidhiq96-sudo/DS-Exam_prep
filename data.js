@@ -233,38 +233,14 @@ const DB = {
         "id": "u1_d1",
         "title": "Q1. Reverse a Singly Linked List",
         "ps": "Kiran develops a travel app that stores the station codes of a route in a singly linked list, in the order the train visits them. For the return journey, the same stations must be visited in the opposite order, so the list has to be reversed by changing the next pointers of its nodes, without creating any new nodes.\n\nThe function reverseList() in the editable area is meant to reverse the list and return the new head, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n representing the number of stations.\n\nThe second line of input consists of n space-separated integers representing the station codes in travel order.",
+        "outFmt": "The first line of output prints \"Reversed List: \" followed by the station codes of the reversed list separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n-1000 ≤ station codes[i] ≤ 1000",
         "sampleIn": "4\n1 3 5 7",
         "sampleOut": "Reversed List: 7 5 3 1",
-        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n    int data;\n    struct Node *next;\n};",
-        "buggy": "struct Node *reverseList(struct Node *head) {\n    struct Node *prev = NULL;\n    struct Node *curr = head;\n    while (curr != NULL) {\n        curr->next = prev;\n        prev = curr;\n        curr = curr->next;\n    }\n    return prev;\n}",
-        "footer": "struct Node *append(struct Node *head, int x) {\n    struct Node *node = (struct Node *)malloc(sizeof(struct Node));\n    node->data = x;\n    node->next = NULL;\n    if (head == NULL) return node;\n    struct Node *curr = head;\n    while (curr->next != NULL) curr = curr->next;\n    curr->next = node;\n    return head;\n}\nvoid printList(struct Node *head) {\n    printf(\"Reversed List:\");\n    for (struct Node *curr = head; curr != NULL; curr = curr->next) {\n        printf(\" %d\", curr->data);\n    }\n    printf(\"\\n\");\n}\nint main() {\n    int n;\n    struct Node *head = NULL;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int x;\n        scanf(\"%d\", &x);\n        head = append(head, x);\n    }\n    head = reverseList(head);\n    printList(head);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "4\n1 3 5 7\n",
-            "expected": "Reversed List: 7 5 3 1"
-          },
-          {
-            "input": "2\n8 9\n",
-            "expected": "Reversed List: 9 8"
-          },
-          {
-            "input": "1\n99\n",
-            "expected": "Reversed List: 99"
-          },
-          {
-            "input": "5\n4 4 4 9 9\n",
-            "expected": "Reversed List: 9 9 4 4 4"
-          },
-          {
-            "input": "9\n21 34 55 89 144 233 377 610 987\n",
-            "expected": "Reversed List: 987 610 377 233 144 89 55 34 21"
-          },
-          {
-            "input": "8\n-10 20 -30 40 -50 60 -70 80\n",
-            "expected": "Reversed List: 80 -70 60 -50 40 -30 20 -10"
-          }
-        ],
-        "sol": "struct Node *reverseList(struct Node *head) {\n    struct Node *prev = NULL;\n    struct Node *curr = head;\n    while (curr != NULL) {\n        struct Node *next = curr->next;\n        curr->next = prev;\n        prev = curr;\n        curr = next;\n    }\n    return prev;\n}",
+        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n  int data;\n  struct Node *next;\n};",
+        "buggy": "struct Node *reverseList(struct Node *head) {\n  struct Node *prev = NULL;\n  struct Node *curr = head;\n  while (curr != NULL) {\n    curr->next = prev;\n    prev = curr;\n    curr = curr->next;\n  }\n  return curr;\n}",
+        "footer": "struct Node *append(struct Node *head, int x) {\n  struct Node *node =\n      (struct Node *)malloc(sizeof(struct Node));\n  node->data = x;\n  node->next = NULL;\n  if (head == NULL) return node;\n  struct Node *curr = head;\n  while (curr->next != NULL) curr = curr->next;\n  curr->next = node;\n  return head;\n}\nvoid printList(struct Node *head) {\n  printf(\"Reversed List:\");\n  for (struct Node *curr = head; curr != NULL;\n       curr = curr->next) {\n    printf(\" %d\", curr->data);\n  }\n  printf(\"\\n\");\n}\nvoid freeList(struct Node *head) {\n  struct Node *temp;\n  while (head != NULL) {\n    temp = head;\n    head = head->next;\n    free(temp);\n  }\n}\nint main() {\n  int n;\n  struct Node *head = NULL;\n  if (scanf(\"%d\", &n) != 1) return 0;\n  for (int i = 0; i < n; i++) {\n    int x;\n    scanf(\"%d\", &x);\n    head = append(head, x);\n  }\n  head = reverseList(head);\n  printList(head);\n  freeList(head);\n  return 0;\n}",
         "samples": [
           {
             "input": "4\n1 3 5 7",
@@ -277,59 +253,44 @@ const DB = {
         ],
         "hidden_cases": [
           {
-            "input": "1\n99\n",
+            "input": "4\n1 3 5 7",
+            "expected": "Reversed List: 7 5 3 1"
+          },
+          {
+            "input": "2\n8 9",
+            "expected": "Reversed List: 9 8"
+          },
+          {
+            "input": "1\n99",
             "expected": "Reversed List: 99"
           },
           {
-            "input": "5\n4 4 4 9 9\n",
+            "input": "5\n4 4 4 9 9",
             "expected": "Reversed List: 9 9 4 4 4"
           },
           {
-            "input": "9\n21 34 55 89 144 233 377 610 987\n",
+            "input": "9\n21 34 55 89 144 233 377 610 987",
             "expected": "Reversed List: 987 610 377 233 144 89 55 34 21"
           },
           {
-            "input": "8\n-10 20 -30 40 -50 60 -70 80\n",
+            "input": "8\n-10 20 -30 40 -50 60 -70 80",
             "expected": "Reversed List: 80 -70 60 -50 40 -30 20 -10"
           }
-        ]
+        ],
+        "sol": "struct Node *reverseList(struct Node *head) {\n  struct Node *prev = NULL;\n  struct Node *curr = head;\n  while (curr != NULL) {\n    struct Node *next = curr->next;\n    curr->next = prev;\n    prev = curr;\n    curr = next;\n  }\n  return prev;\n}"
       },
       {
         "id": "u1_d2",
         "title": "Q2. Delete an Element at a Given Position in an Array-Based List",
         "ps": "Rohit manages the waiting list of a clinic, where the token numbers of waiting patients are stored in an array-based list. When a patient at a given position (counted from 1) leaves the queue, that token has to be removed from the list and every token after it must move one place to the left to close the gap.\n\nThe function deleteAt() in the editable area is meant to remove the element at the given position and return the new size of the list, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n representing the number of tokens in the list.\n\nThe second line of input consists of n space-separated integers representing the token numbers.\n\nThe third line of input consists of an integer pos representing the position (counted from 1) of the token to be removed.",
+        "outFmt": "The first line of output prints \"Updated List: \" followed by the remaining tokens separated by spaces, or the string \"Empty\" if no token remains.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ pos ≤ n\n-1000 ≤ token numbers[i] ≤ 1000",
         "sampleIn": "5\n7 8 9 10 11\n2",
         "sampleOut": "Updated List: 7 9 10 11",
-        "header": "#include <stdio.h>\nvoid printList(int a[], int n) {\n    printf(\"Updated List:\");\n    if (n == 0) printf(\" Empty\");\n    for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n    printf(\"\\n\");\n}",
-        "buggy": "int deleteAt(int a[], int n, int pos) {\n    for (int i = pos; i < n; i++) {\n        a[i] = a[i - 1];\n    }\n    return n;\n}",
-        "footer": "int main() {\n    int n, pos;\n    int a[105];\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        scanf(\"%d\", &a[i]);\n    }\n    scanf(\"%d\", &pos);\n    n = deleteAt(a, n, pos);\n    printList(a, n);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "5\n7 8 9 10 11\n2\n",
-            "expected": "Updated List: 7 9 10 11"
-          },
-          {
-            "input": "3\n4 9 12\n3\n",
-            "expected": "Updated List: 4 9"
-          },
-          {
-            "input": "4\n5 6 7 8\n4\n",
-            "expected": "Updated List: 5 6 7"
-          },
-          {
-            "input": "1\n9\n1\n",
-            "expected": "Updated List: Empty"
-          },
-          {
-            "input": "7\n11 22 33 44 55 66 77\n5\n",
-            "expected": "Updated List: 11 22 33 44 66 77"
-          },
-          {
-            "input": "6\n-5 -3 0 2 4 6\n2\n",
-            "expected": "Updated List: -5 0 2 4 6"
-          }
-        ],
-        "sol": "int deleteAt(int a[], int n, int pos) {\n    for (int i = pos; i < n; i++) {\n        a[i - 1] = a[i];\n    }\n    return n - 1;\n}",
+        "header": "#include <stdio.h>",
+        "buggy": "void printList(int a[], int n) {\n  printf(\"Updated List:\");\n  for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n  printf(\"\\n\");\n}\nint deleteAt(int a[], int n, int pos) {\n  for (int i = pos - 1; i < n; i++)\n    a[i] = a[i + 1];\n  return n;\n}",
+        "footer": "int main() {\n  int n, pos;\n  int a[105];\n  if (scanf(\"%d\", &n) != 1) return 0;\n  for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n  scanf(\"%d\", &pos);\n  n = deleteAt(a, n, pos);\n  printList(a, n);\n  return 0;\n}",
         "samples": [
           {
             "input": "5\n7 8 9 10 11\n2",
@@ -342,59 +303,44 @@ const DB = {
         ],
         "hidden_cases": [
           {
-            "input": "4\n5 6 7 8\n4\n",
+            "input": "5\n7 8 9 10 11\n2",
+            "expected": "Updated List: 7 9 10 11"
+          },
+          {
+            "input": "3\n4 9 12\n3",
+            "expected": "Updated List: 4 9"
+          },
+          {
+            "input": "4\n5 6 7 8\n4",
             "expected": "Updated List: 5 6 7"
           },
           {
-            "input": "1\n9\n1\n",
+            "input": "1\n9\n1",
             "expected": "Updated List: Empty"
           },
           {
-            "input": "7\n11 22 33 44 55 66 77\n5\n",
+            "input": "7\n11 22 33 44 55 66 77\n5",
             "expected": "Updated List: 11 22 33 44 66 77"
           },
           {
-            "input": "6\n-5 -3 0 2 4 6\n2\n",
+            "input": "6\n-5 -3 0 2 4 6\n2",
             "expected": "Updated List: -5 0 2 4 6"
           }
-        ]
+        ],
+        "sol": "void printList(int a[], int n) {\n  printf(\"Updated List:\");\n  if (n == 0) {\n    printf(\" Empty\");\n  }\n  for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n  printf(\"\\n\");\n}\nint deleteAt(int a[], int n, int pos) {\n  for (int i = pos; i < n; i++)\n    a[i - 1] = a[i];\n  return n - 1;\n}"
       },
       {
         "id": "u1_d3",
         "title": "Q3. Traverse a Circular Linked List and Count Nodes",
-        "ps": "Neha plans the night duty of a campus, where the IDs of the security guards are kept in a circular linked list. The function traverse() in the editable area is meant to visit every node exactly once, starting from the head, print all the guard IDs, and then print the number of nodes. Debug the code so that the program prints the expected output.",
+        "ps": "Neha plans the night duty of a campus, where the IDs of the security guards are kept in a circular linked list because after the last guard in the roster, the duty goes back to the first guard. The last node of the list therefore points back to the first node, and there is no node whose next pointer is NULL.\n\nThe function traverse() in the editable area is meant to visit every node exactly once, starting from the head, print all the guard IDs, and then print the number of nodes. The code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n representing the number of guards.\n\nThe second line of input consists of n space-separated integers representing the guard IDs in roster order.",
+        "outFmt": "The first line of output prints \"Circular List: \" followed by the guard IDs in roster order separated by spaces.\n\nThe second line of output prints \"Node Count: \" followed by an integer representing the number of nodes in the list.",
+        "cons": "1 ≤ n ≤ 100",
         "sampleIn": "2\n100 200",
         "sampleOut": "Circular List: 100 200\nNode Count: 2",
-        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n    int data;\n    struct Node *next;\n};\nstruct Node *createCircular(int arr[], int n) {\n    struct Node *head = NULL, *tail = NULL;\n    for (int i = 0; i < n; i++) {\n        struct Node *node = (struct Node *)malloc(sizeof(struct Node));\n        node->data = arr[i];\n        node->next = NULL;\n        if (head == NULL) head = node;\n        else tail->next = node;\n        tail = node;\n    }\n    tail->next = head;\n    return head;\n}",
-        "buggy": "void traverse(struct Node *head) {\n    struct Node *curr = head;\n    int count = 0;\n    printf(\"Circular List:\");\n    while (curr != NULL) {\n        printf(\" %d\", curr->data);\n        count++;\n        curr = curr->next;\n    }\n    printf(\"\\n\");\n    printf(\"Node Count: %d\\n\", count);\n}",
-        "footer": "int main() {\n    int n;\n    int a[105];\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    struct Node *head = createCircular(a, n);\n    traverse(head);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "2\n100 200\n",
-            "expected": "Circular List: 100 200\nNode Count: 2"
-          },
-          {
-            "input": "4\n9 8 7 6\n",
-            "expected": "Circular List: 9 8 7 6\nNode Count: 4"
-          },
-          {
-            "input": "1\n7\n",
-            "expected": "Circular List: 7\nNode Count: 1"
-          },
-          {
-            "input": "4\n2 4 4 2\n",
-            "expected": "Circular List: 2 4 4 2\nNode Count: 4"
-          },
-          {
-            "input": "8\n1 2 3 4 5 6 7 8\n",
-            "expected": "Circular List: 1 2 3 4 5 6 7 8\nNode Count: 8"
-          },
-          {
-            "input": "6\n-3 -2 -1 1 2 3\n",
-            "expected": "Circular List: -3 -2 -1 1 2 3\nNode Count: 6"
-          }
-        ],
-        "sol": "void traverse(struct Node *head) {\n    struct Node *curr = head;\n    int count = 0;\n    printf(\"Circular List:\");\n    do {\n        printf(\" %d\", curr->data);\n        count++;\n        curr = curr->next;\n    } while (curr != head);\n    printf(\"\\n\");\n    printf(\"Node Count: %d\\n\", count);\n}",
+        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n  int data;\n  struct Node *next;\n};\nstruct Node *createCircular(int arr[], int n) {\n  struct Node *head = NULL, *tail = NULL;\n  for (int i = 0; i < n; i++) {\n    struct Node *node =\n        (struct Node *)malloc(sizeof(struct Node));\n    node->data = arr[i];\n    node->next = NULL;\n    if (head == NULL)\n      head = node;\n    else\n      tail->next = node;\n    tail = node;\n  }\n  if (tail != NULL) tail->next = head;\n  return head;\n}",
+        "buggy": "void traverse(struct Node *head) {\n  if (head == NULL) {\n    printf(\"Circular List:\\nNode Count: 0\\n\");\n    return;\n  }\n  struct Node *curr = head;\n  int count = 0;\n  printf(\"Circular List:\");\n  while (curr != NULL) {\n    printf(\" %d\", curr->data);\n    count++;\n    curr = curr->next;\n  }\n  printf(\"\\n\");\n  printf(\"Node Count: %d\\n\", count);\n}",
+        "footer": "void freeCircular(struct Node *head, int n) {\n  struct Node *curr = head;\n  for (int i = 0; i < n && curr != NULL; i++) {\n    struct Node *next = curr->next;\n    free(curr);\n    curr = next;\n  }\n}\nint main() {\n  int n;\n  int a[105];\n  if (scanf(\"%d\", &n) != 1) return 0;\n  for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n  struct Node *head = createCircular(a, n);\n  traverse(head);\n  freeCircular(head, n);\n  return 0;\n}",
         "samples": [
           {
             "input": "2\n100 200",
@@ -407,59 +353,44 @@ const DB = {
         ],
         "hidden_cases": [
           {
-            "input": "1\n7\n",
+            "input": "2\n100 200",
+            "expected": "Circular List: 100 200\nNode Count: 2"
+          },
+          {
+            "input": "4\n9 8 7 6",
+            "expected": "Circular List: 9 8 7 6\nNode Count: 4"
+          },
+          {
+            "input": "1\n7",
             "expected": "Circular List: 7\nNode Count: 1"
           },
           {
-            "input": "4\n2 4 4 2\n",
+            "input": "4\n2 4 4 2",
             "expected": "Circular List: 2 4 4 2\nNode Count: 4"
           },
           {
-            "input": "8\n1 2 3 4 5 6 7 8\n",
+            "input": "8\n1 2 3 4 5 6 7 8",
             "expected": "Circular List: 1 2 3 4 5 6 7 8\nNode Count: 8"
           },
           {
-            "input": "6\n-3 -2 -1 1 2 3\n",
+            "input": "6\n-3 -2 -1 1 2 3",
             "expected": "Circular List: -3 -2 -1 1 2 3\nNode Count: 6"
           }
-        ]
+        ],
+        "sol": "void traverse(struct Node *head) {\n  if (head == NULL) {\n    printf(\"Circular List:\\nNode Count: 0\\n\");\n    return;\n  }\n  struct Node *curr = head;\n  int count = 0;\n  printf(\"Circular List:\");\n  do {\n    printf(\" %d\", curr->data);\n    count++;\n    curr = curr->next;\n  } while (curr != head);\n  printf(\"\\n\");\n  printf(\"Node Count: %d\\n\", count);\n}"
       },
       {
         "id": "u1_d4",
         "title": "Q4. Delete the Last Node from a Doubly Linked List",
-        "ps": "Arjun is building a browser whose history is stored in a doubly linked list. The function deleteLast() in the editable area is meant to remove the last node and return the head of the list, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "ps": "Arjun is building a browser whose history is stored in a doubly linked list, where every node holds a page ID and links to both the page visited before it and the page visited after it. When the user presses the \"clear last visit\" button, the most recently visited page, which is the last node of the list, must be removed.\n\nThe function deleteLast() in the editable area is meant to remove the last node and return the head of the list, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n representing the number of pages in the history.\n\nThe second line of input consists of n space-separated integers representing the page IDs in the order they were visited.",
+        "outFmt": "The first line of output prints \"Updated List: \" followed by the remaining page IDs separated by spaces, or the string \"Empty\" if no page remains.",
+        "cons": "1 ≤ n ≤ 100\n-1000 ≤ page IDs[i] ≤ 1000",
         "sampleIn": "3\n11 22 33",
         "sampleOut": "Updated List: 11 22",
-        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n    int data;\n    struct Node *prev;\n    struct Node *next;\n};\nstruct Node *append(struct Node *head, int x) {\n    struct Node *node = (struct Node *)malloc(sizeof(struct Node));\n    node->data = x; node->next = NULL; node->prev = NULL;\n    if (head == NULL) return node;\n    struct Node *curr = head;\n    while (curr->next != NULL) curr = curr->next;\n    curr->next = node; node->prev = curr;\n    return head;\n}\nvoid printList(struct Node *head) {\n    printf(\"Updated List:\");\n    if (head == NULL) printf(\" Empty\");\n    for (struct Node *curr = head; curr != NULL; curr = curr->next) printf(\" %d\", curr->data);\n    printf(\"\\n\");\n}",
-        "buggy": "struct Node *deleteLast(struct Node *head) {\n    struct Node *tail = head;\n    while (tail->next != NULL) {\n        tail = tail->next;\n    }\n    tail->prev = NULL;\n    free(tail);\n    return head;\n}",
-        "footer": "int main() {\n    int n;\n    struct Node *head = NULL;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int x;\n        scanf(\"%d\", &x);\n        head = append(head, x);\n    }\n    head = deleteLast(head);\n    printList(head);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "3\n11 22 33\n",
-            "expected": "Updated List: 11 22"
-          },
-          {
-            "input": "4\n9 8 7 6\n",
-            "expected": "Updated List: 9 8 7"
-          },
-          {
-            "input": "1\n8\n",
-            "expected": "Updated List: Empty"
-          },
-          {
-            "input": "4\n1 1 2 2\n",
-            "expected": "Updated List: 1 1 2"
-          },
-          {
-            "input": "7\n5 15 25 35 45 55 65\n",
-            "expected": "Updated List: 5 15 25 35 45 55"
-          },
-          {
-            "input": "6\n-1 -2 -3 4 5 6\n",
-            "expected": "Updated List: -1 -2 -3 4 5"
-          }
-        ],
-        "sol": "struct Node *deleteLast(struct Node *head) {\n    if (head == NULL) return NULL;\n    struct Node *tail = head;\n    while (tail->next != NULL) {\n        tail = tail->next;\n    }\n    if (tail->prev == NULL) {\n        free(tail);\n        return NULL;\n    }\n    tail->prev->next = NULL;\n    free(tail);\n    return head;\n}",
+        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n  int data;\n  struct Node *prev;\n  struct Node *next;\n};\nstruct Node *append(struct Node *head, int x) {\n  struct Node *node =\n      (struct Node *)malloc(sizeof(struct Node));\n  node->data = x;\n  node->next = NULL;\n  node->prev = NULL;\n  if (head == NULL) return node;\n  struct Node *curr = head;\n  while (curr->next != NULL) curr = curr->next;\n  curr->next = node;\n  node->prev = curr;\n  return head;\n}",
+        "buggy": "void printList(struct Node *head) {\n  printf(\"Updated List:\");\n  for (struct Node *curr = head; curr != NULL;\n       curr = curr->next) {\n    printf(\" %d\", curr->data);\n  }\n  printf(\"\\n\");\n}\nstruct Node *deleteLast(struct Node *head) {\n  if (head == NULL) return NULL;\n  struct Node *tail = head;\n  while (tail->next != NULL) tail = tail->next;\n  tail->prev->next = NULL;\n  free(tail);\n  return head;\n}",
+        "footer": "void freeList(struct Node *head) {\n  struct Node *temp;\n  while (head != NULL) {\n    temp = head;\n    head = head->next;\n    free(temp);\n  }\n}\nint main() {\n  int n;\n  struct Node *head = NULL;\n  if (scanf(\"%d\", &n) != 1) return 0;\n  for (int i = 0; i < n; i++) {\n    int x;\n    scanf(\"%d\", &x);\n    head = append(head, x);\n  }\n  head = deleteLast(head);\n  printList(head);\n  freeList(head);\n  return 0;\n}",
         "samples": [
           {
             "input": "3\n11 22 33",
@@ -471,60 +402,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n8\n",
-            "expected": "Updated List: Empty"
-          },
-          {
-            "input": "4\n1 1 2 2\n",
-            "expected": "Updated List: 1 1 2"
-          },
-          {
-            "input": "7\n5 15 25 35 45 55 65\n",
-            "expected": "Updated List: 5 15 25 35 45 55"
-          },
-          {
-            "input": "6\n-1 -2 -3 4 5 6\n",
-            "expected": "Updated List: -1 -2 -3 4 5"
-          }
-        ]
+        {
+          "input": "1\n999",
+          "expected": "Updated List: Empty"
+        },
+        {
+          "input": "1\n0",
+          "expected": "Updated List: Empty"
+        },
+        {
+          "input": "1\n42",
+          "expected": "Updated List: Empty"
+        },
+        {
+          "input": "1\n7",
+          "expected": "Updated List: Empty"
+        },
+        {
+          "input": "1\n-37",
+          "expected": "Updated List: Empty"
+        },
+        {
+          "input": "1\n-1000",
+          "expected": "Updated List: Empty"
+        }
+      ],
+        "sol": "void printList(struct Node *head) {\n  printf(\"Updated List:\");\n  if (head == NULL) {\n    printf(\" Empty\");\n  }\n  for (struct Node *curr = head; curr != NULL;\n       curr = curr->next) {\n    printf(\" %d\", curr->data);\n  }\n  printf(\"\\n\");\n}\nstruct Node *deleteLast(struct Node *head) {\n  if (head == NULL) return NULL;\n  struct Node *tail = head;\n  while (tail->next != NULL) tail = tail->next;\n  // If only one node exists\n  if (tail->prev == NULL) {\n    free(tail);\n    return NULL;\n  }\n  tail->prev->next = NULL;\n  free(tail);\n  return head;\n}"
       },
       {
         "id": "u1_d5",
         "title": "Q5. Sort an Array Using LSD Radix Sort",
-        "ps": "Divya works at a courier hub where parcel numbers must be sorted using LSD radix sort. The functions countSort() and radixSort() in the editable area are meant to sort the array in ascending order, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "ps": "Divya works at a courier hub where parcel numbers must be sorted before loading. She uses LSD radix sort, which sorts the numbers digit by digit, starting from the units digit and moving towards the most significant digit. Every digit pass uses a stable counting sort, which means that numbers with the same current digit keep their earlier relative order.\n\nThe functions countSort() and radixSort() in the editable area are meant to sort the array in ascending order, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n representing the number of parcels.\n\nThe second line of input consists of n space-separated integers representing the parcel numbers.",
+        "outFmt": "The first line of output prints \"Sorted Array: \" followed by the parcel numbers in ascending order separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n0 ≤ parcel numbers[i] ≤ 10000",
         "sampleIn": "5\n21 12 31 13 22",
         "sampleOut": "Sorted Array: 12 13 21 22 31",
-        "header": "#include <stdio.h>\nint getMax(int a[], int n) {\n    int max = a[0];\n    for (int i = 1; i < n; i++) if (a[i] > max) max = a[i];\n    return max;\n}\nvoid printArray(int a[], int n) {\n    printf(\"Sorted Array:\");\n    for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n    printf(\"\\n\");\n}",
-        "buggy": "void countSort(int a[], int n, int exp) {\n    int output[105];\n    int count[10] = {0};\n    for (int i = 0; i < n; i++) count[(a[i] / exp) % 10]++;\n    for (int i = 1; i < 10; i++) count[i] += count[i - 1];\n    for (int i = 0; i < n; i++) {\n        output[count[(a[i] / exp) % 10] - 1] = a[i];\n        count[(a[i] / exp) % 10]--;\n    }\n    for (int i = 0; i < n; i++) a[i] = output[i];\n}\nvoid radixSort(int a[], int n) {\n    int max = getMax(a, n);\n    for (int exp = 1; max / exp > 0; exp += 10) countSort(a, n, exp);\n}",
-        "footer": "int main() {\n    int n;\n    int a[105];\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    radixSort(a, n);\n    printArray(a, n);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "5\n21 12 31 13 22\n",
-            "expected": "Sorted Array: 12 13 21 22 31"
-          },
-          {
-            "input": "4\n99 9 90 19\n",
-            "expected": "Sorted Array: 9 19 90 99"
-          },
-          {
-            "input": "1\n5\n",
-            "expected": "Sorted Array: 5"
-          },
-          {
-            "input": "6\n100 10 1 1000 11 101\n",
-            "expected": "Sorted Array: 1 10 11 100 101 1000"
-          },
-          {
-            "input": "10\n329 457 657 839 436 720 355 123 987 654\n",
-            "expected": "Sorted Array: 123 329 355 436 457 654 657 720 839 987"
-          },
-          {
-            "input": "7\n5000 450 45 4 4000 40 400\n",
-            "expected": "Sorted Array: 4 40 45 400 450 4000 5000"
-          }
-        ],
-        "sol": "void countSort(int a[], int n, int exp) {\n    int output[105];\n    int count[10] = {0};\n    for (int i = 0; i < n; i++) {\n        count[(a[i] / exp) % 10]++;\n    }\n    for (int i = 1; i < 10; i++) {\n        count[i] += count[i - 1];\n    }\n    for (int i = n - 1; i >= 0; i--) {\n        output[count[(a[i] / exp) % 10] - 1] = a[i];\n        count[(a[i] / exp) % 10]--;\n    }\n    for (int i = 0; i < n; i++) {\n        a[i] = output[i];\n    }\n}\nvoid radixSort(int a[], int n) {\n    int max = getMax(a, n);\n    for (int exp = 1; max / exp > 0; exp *= 10) {\n        countSort(a, n, exp);\n    }\n}",
+        "header": "#include <stdio.h>\nint getMax(int a[], int n) {\n  int max = a[0];\n  for (int i = 1; i < n; i++)\n    if (a[i] > max) max = a[i];\n  return max;\n}",
+        "buggy": "void countSort(int a[], int n, int exp) {\n  int output[105];\n  int count[10] = {0};\n  for (int i = 0; i < n; i++) count[a[i] % 10]++;\n  for (int i = 1; i < 10; i++) count[i] += count[i - 1];\n  for (int i = 0; i < n; i++) {\n    int digit = (a[i] / exp) % 10;\n    output[count[digit] - 1] = a[i];\n    count[digit]--;\n  }\n  for (int i = 0; i < n; i++) a[i] = output[i];\n}\nvoid radixSort(int a[], int n) {\n  int max = getMax(a, n);\n  for (int exp = 1; exp < max; exp *= 10)\n    countSort(a, n, exp);\n}",
+        "footer": "void printArray(int a[], int n) {\n  printf(\"Sorted Array:\");\n  for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n  printf(\"\\n\");\n}\nint main() {\n  int n;\n  int a[105];\n  if (scanf(\"%d\", &n) != 1) return 0;\n  for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n  radixSort(a, n);\n  printArray(a, n);\n  return 0;\n}",
         "samples": [
           {
             "input": "5\n21 12 31 13 22",
@@ -536,25 +452,33 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n5\n",
-            "expected": "Sorted Array: 5"
-          },
-          {
-            "input": "6\n100 10 1 1000 11 101\n",
-            "expected": "Sorted Array: 1 10 11 100 101 1000"
-          },
-          {
-            "input": "10\n329 457 657 839 436 720 355 123 987 654\n",
-            "expected": "Sorted Array: 123 329 355 436 457 654 657 720 839 987"
-          },
-          {
-            "input": "7\n5000 450 45 4 4000 40 400\n",
-            "expected": "Sorted Array: 4 40 45 400 450 4000 5000"
-          }
-        ]
-      }
-    ],
+        {
+          "input": "6\n896 8500 9779 6957 8234 8009",
+          "expected": "Sorted Array: 896 6957 8009 8234 8500 9779"
+        },
+        {
+          "input": "5\n4314 7341 7841 7884 5076",
+          "expected": "Sorted Array: 4314 5076 7341 7841 7884"
+        },
+        {
+          "input": "6\n9944 5264 5191 6677 8443 3718",
+          "expected": "Sorted Array: 3718 5191 5264 6677 8443 9944"
+        },
+        {
+          "input": "8\n3752 6467 5413 9446 9955 8759 5129 957",
+          "expected": "Sorted Array: 957 3752 5129 5413 6467 8759 9446 9955"
+        },
+        {
+          "input": "4\n4735 9820 719 975",
+          "expected": "Sorted Array: 719 975 4735 9820"
+        },
+        {
+          "input": "2\n6251 8374",
+          "expected": "Sorted Array: 6251 8374"
+        }
+      ],
+        "sol": "void countSort(int a[], int n, int exp) {\n  int output[105];\n  int count[10] = {0};\n  for (int i = 0; i < n; i++)\n    count[(a[i] / exp) % 10]++;\n  for (int i = 1; i < 10; i++) count[i] += count[i - 1];\n  // Traverse in reverse order to ensure stability\n  for (int i = n - 1; i >= 0; i--) {\n    int digit = (a[i] / exp) % 10;\n    output[count[digit] - 1] = a[i];\n    count[digit]--;\n  }\n  for (int i = 0; i < n; i++) a[i] = output[i];\n}\nvoid radixSort(int a[], int n) {\n  int max = getMax(a, n);\n  for (int exp = 1; max / exp > 0; exp *= 10)\n    countSort(a, n, exp);\n}"
+      }],
     "cod": [
       {
         "id": "u1_c1",
@@ -1050,40 +974,16 @@ const DB = {
     "debug": [
       {
         "id": "u2_d1",
-        "title": "Q1. STACK IMPLEMENTATION USING ARRAY",
-        "ps": "Meena runs the plate counter of a canteen, where clean plates are stacked in a holder of fixed capacity. Implement push(), pop() and peek() using an array. Debug the code so that the program prints the expected output.",
+        "title": "Q1. Stack Implementation using Array",
+        "ps": "Meena runs the plate counter of a canteen, where clean plates are stacked in a holder that can carry only a fixed number of plates. A new plate goes on the top of the stack (push), the top plate is taken away when a customer needs it (pop), and sometimes she only wants to see which plate is on the top without removing it (peek).\n\nThe functions push(), pop() and peek() in the editable area implement this stack using an array, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line contains an integer c representing the capacity of the stack. The second line contains an integer m representing the number of operations. Each of the next m lines contains two integers t and x, where t is the operation type:\n\n1 for push, 2 for pop, 3 for peek.\n\nFor operations 2 and 3, x is 0 and should be ignored.",
+        "outFmt": "For a push attempted when the stack is full, print \"Stack Overflow\". For a successful push, print nothing.\n\nFor every pop, print \"Popped: \" followed by the removed value, or \"Stack Underflow\" if the stack is empty.\n\nFor every peek, print \"Top: \" followed by the top value, or \"Stack is empty\" if the stack is empty.",
+        "cons": "1 ≤ c ≤ 100\n1 ≤ m ≤ 50\n1≤t≤3\n0 ≤ x ≤ 1000",
         "sampleIn": "2\n2\n1 7\n3 0",
         "sampleOut": "Top: 7",
         "header": "#include <stdio.h>\nint stack[105];\nint top = -1;\nint capacity;",
-        "buggy": "void push(int x) {\n    if (top == capacity) {\n        printf(\"Stack Overflow\\n\");\n        return;\n    }\n    stack[top] = x;\n    top++;\n}\nvoid pop() {\n    if (top <= 0) {\n        printf(\"Stack Underflow\\n\");\n        return;\n    }\n    printf(\"Popped: %d\\n\", stack[top]);\n    top--;\n}\nvoid peek() {\n    if (top == 0) {\n        printf(\"Stack is empty\\n\");\n        return;\n    }\n    printf(\"Top: %d\\n\", stack[top]);\n}",
-        "footer": "void process(int t, int x) {\n    if (t == 1) push(x);\n    else if (t == 2) pop();\n    else peek();\n}\nint main() {\n    int m;\n    scanf(\"%d\", &capacity);\n    scanf(\"%d\", &m);\n    for (int i = 0; i < m; i++) {\n        int t, x;\n        scanf(\"%d %d\", &t, &x);\n        process(t, x);\n    }\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "2\n2\n1 7\n3 0\n",
-            "expected": "Top: 7"
-          },
-          {
-            "input": "1\n1\n2 0\n",
-            "expected": "Stack Underflow"
-          },
-          {
-            "input": "2\n3\n2 0\n3 0\n1 5\n",
-            "expected": "Stack Underflow\nStack is empty"
-          },
-          {
-            "input": "3\n8\n1 4\n1 5\n1 6\n1 7\n2 0\n2 0\n2 0\n2 0\n",
-            "expected": "Stack Overflow\nPopped: 6\nPopped: 5\nPopped: 4\nStack Underflow"
-          },
-          {
-            "input": "1\n4\n1 9\n1 8\n3 0\n2 0\n",
-            "expected": "Stack Overflow\nTop: 9\nPopped: 9"
-          },
-          {
-            "input": "4\n9\n1 3\n1 6\n1 9\n1 12\n1 15\n3 0\n2 0\n2 0\n3 0\n",
-            "expected": "Stack Overflow\nTop: 12\nPopped: 12\nPopped: 9\nTop: 6"
-          }
-        ],
-        "sol": "void push(int x) {\n    if (top == capacity - 1) {\n        printf(\"Stack Overflow\\n\");\n        return;\n    }\n    top++;\n    stack[top] = x;\n}\nvoid pop() {\n    if (top == -1) {\n        printf(\"Stack Underflow\\n\");\n        return;\n    }\n    printf(\"Popped: %d\\n\", stack[top]);\n    top--;\n}\nvoid peek() {\n    if (top == -1) {\n        printf(\"Stack is empty\\n\");\n        return;\n    }\n    printf(\"Top: %d\\n\", stack[top]);\n}",
+        "buggy": "void push(int x) {\n  if (top == capacity) {\n    printf(\"Stack Overflow\\n\");\n    return;\n  }\n  stack[top++] = x;\n}\nvoid pop() {\n  if (top == -1) {\n    printf(\"Stack Underflow\\n\");\n    return;\n  }\n  top--;\n  printf(\"Popped: %d\\n\", stack[top]);\n}\nvoid peek() {\n  if (top == -1) {\n    printf(\"Stack is empty\\n\");\n    return;\n  }\n  printf(\"Top: %d\\n\", stack[top--]);\n}",
+        "footer": "void process(int t, int x) {\n  if (t == 1)\n    push(x);\n  else if (t == 2)\n    pop();\n  else\n    peek();\n}\nint main() {\n  int m;\n  scanf(\"%d\", &capacity);\n  scanf(\"%d\", &m);\n  for (int i = 0; i < m; i++) {\n    int t, x;\n    scanf(\"%d %d\", &t, &x);\n    process(t, x);\n  }\n  return 0;\n}",
         "samples": [
           {
             "input": "2\n2\n1 7\n3 0",
@@ -1095,60 +995,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "2\n3\n2 0\n3 0\n1 5\n",
-            "expected": "Stack Underflow\nStack is empty"
-          },
-          {
-            "input": "3\n8\n1 4\n1 5\n1 6\n1 7\n2 0\n2 0\n2 0\n2 0\n",
-            "expected": "Stack Overflow\nPopped: 6\nPopped: 5\nPopped: 4\nStack Underflow"
-          },
-          {
-            "input": "1\n4\n1 9\n1 8\n3 0\n2 0\n",
-            "expected": "Stack Overflow\nTop: 9\nPopped: 9"
-          },
-          {
-            "input": "4\n9\n1 3\n1 6\n1 9\n1 12\n1 15\n3 0\n2 0\n2 0\n3 0\n",
-            "expected": "Stack Overflow\nTop: 12\nPopped: 12\nPopped: 9\nTop: 6"
-          }
-        ]
+        {
+          "input": "4\n8\n1 88\n1 61\n1 84\n1 55\n1 6\n3 0\n1 38\n1 72",
+          "expected": "Stack Overflow\nTop: 55\nStack Overflow\nStack Overflow"
+        },
+        {
+          "input": "4\n4\n1 31\n3 0\n3 0\n1 59",
+          "expected": "Top: 31\nTop: 31"
+        },
+        {
+          "input": "1\n9\n1 32\n1 71\n2 0\n1 92\n1 62\n1 63\n1 40\n2 0\n3 0",
+          "expected": "Stack Overflow\nPopped: 32\nStack Overflow\nStack Overflow\nStack Overflow\nPopped: 92\nStack is empty"
+        },
+        {
+          "input": "2\n7\n1 97\n3 0\n1 30\n3 0\n3 0\n1 20\n2 0",
+          "expected": "Top: 97\nTop: 30\nTop: 30\nStack Overflow\nPopped: 30"
+        },
+        {
+          "input": "2\n4\n1 37\n2 0\n1 56\n3 0",
+          "expected": "Popped: 37\nTop: 56"
+        },
+        {
+          "input": "4\n7\n1 99\n1 37\n3 0\n1 86\n3 0\n3 0\n1 69",
+          "expected": "Top: 37\nTop: 86\nTop: 86"
+        }
+      ],
+        "sol": "void push(int x) {\n  if (top == capacity - 1) {\n    printf(\"Stack Overflow\\n\");\n    return;\n  }\n  top++;\n  stack[top] = x;\n}\nvoid pop() {\n  if (top == -1) {\n    printf(\"Stack Underflow\\n\");\n    return;\n  }\n  printf(\"Popped: %d\\n\", stack[top]);\n  top--;\n}\nvoid peek() {\n  if (top == -1) {\n    printf(\"Stack is empty\\n\");\n    return;\n  }\n  printf(\"Top: %d\\n\", stack[top]);\n}"
       },
       {
         "id": "u2_d2",
-        "title": "Q2. INFIX TO POSTFIX CONVERSION",
-        "ps": "Lakshmi is writing the expression module of a calculator app. Users type expressions in infix form, but the calculator evaluates them in postfix form. Debug infixToPostfix() so that the program prints the expected postfix expression.",
+        "title": "Q2. Infix to Postfix Conversion",
+        "ps": "Lakshmi is writing the expression module of a calculator app. Users type expressions in the usual infix form, such as a+b*c, but the calculator evaluates them in postfix form, so every expression must be converted first.\n\nThe conversion uses a stack of operators. Operands go straight to the output, an opening bracket is pushed, a closing bracket pops operators until the matching opening bracket, and an operator first pops every operator on the stack with an equal or higher precedence before it is pushed. The operators * and / have higher precedence than + and -.\n\nThe function infixToPostfix() in the editable area is meant to print the postfix form, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line contains a string s representing the infix expression without spaces.",
+        "outFmt": "Print \"Postfix: \" followed by the postfix form of the expression.",
+        "cons": "1 ≤ length of s ≤ 50\ns contains lowercase letters as operands, the operators +, -, *, / and brackets ( ).",
         "sampleIn": "x*y+z",
         "sampleOut": "Postfix: xy*z+",
-        "header": "#include <stdio.h>\nint precedence(char c) {\n    if (c == '*' || c == '/') return 2;\n    if (c == '+' || c == '-') return 1;\n    return 0;\n}",
-        "buggy": "void infixToPostfix(char s[]) {\n    char stack[105];\n    int top = -1;\n    printf(\"Postfix: \");\n    for (int i = 0; s[i] != '\\0'; i++) {\n        char c = s[i];\n        if (c >= 'a' && c <= 'z') {\n            printf(\"%c\", c);\n        } else if (c == '(') {\n            stack[++top] = c;\n        } else if (c == ')') {\n            while (top >= 0 && stack[top] != '(') printf(\"%c\", stack[top--]);\n        } else {\n            stack[++top] = c;\n        }\n    }\n    printf(\"\\n\");\n}",
-        "footer": "int main() {\n    char s[55];\n    scanf(\"%s\", s);\n    infixToPostfix(s);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "x*y+z\n",
-            "expected": "Postfix: xy*z+"
-          },
-          {
-            "input": "p+q-r\n",
-            "expected": "Postfix: pq+r-"
-          },
-          {
-            "input": "(a+b)c\n",
-            "expected": "Postfix: ab+c"
-          },
-          {
-            "input": "a-b-c\n",
-            "expected": "Postfix: ab-c-"
-          },
-          {
-            "input": "a*(b+c)/d\n",
-            "expected": "Postfix: abc+*d/"
-          },
-          {
-            "input": "(a+b)(c-d)/e\n",
-            "expected": "Postfix: ab+cd-e/"
-          }
-        ],
-        "sol": "void infixToPostfix(char s[]) {\n    char stack[105];\n    int top = -1;\n    printf(\"Postfix: \");\n    for (int i = 0; s[i] != '\\0'; i++) {\n        char c = s[i];\n        if (c >= 'a' && c <= 'z') {\n            printf(\"%c\", c);\n        } else if (c == '(') {\n            top++;\n            stack[top] = c;\n        } else if (c == ')') {\n            while (top >= 0 && stack[top] != '(') {\n                printf(\"%c\", stack[top]);\n                top--;\n            }\n            if (top >= 0 && stack[top] == '(') {\n                top--;\n            }\n        } else {\n            while (top >= 0 && stack[top] != '(' &&\n                   precedence(stack[top]) >= precedence(c)) {\n                printf(\"%c\", stack[top]);\n                top--;\n            }\n            top++;\n            stack[top] = c;\n        }\n    }\n    while (top >= 0) {\n        if (stack[top] != '(') {\n            printf(\"%c\", stack[top]);\n        }\n        top--;\n    }\n    printf(\"\\n\");\n}",
+        "header": "#include <stdio.h>\nint precedence(char c) {\n  if (c == '*' || c == '/') return 2;\n  if (c == '+' || c == '-') return 1;\n  return 0;\n}",
+        "buggy": "void infixToPostfix(char s[]) {\n  char stack[105];\n  int top = -1;\n  printf(\"Postfix: \");\n  for (int i = 0; s[i] != '\\0'; i++) {\n    char c = s[i];\n    if (c >= 'a' && c <= 'z') {\n      printf(\"%c\", c);\n    } else if (c == '(') {\n      top++;\n      stack[top] = c;\n    } else if (c == ')') {\n      while (top >= 0 && stack[top] != '(') {\n        printf(\"%c\", stack[top]);\n        top--;\n      }\n    } else {\n      while (top >= 0 && precedence(stack[top]) >\n                             precedence(c)) {\n        printf(\"%c\", stack[top]);\n        top--;\n      }\n      top++;\n      stack[top] = c;\n    }\n  }\n  printf(\"\\n\");\n}",
+        "footer": "int main() {\n  char s[55];\n  scanf(\"%s\", s);\n  infixToPostfix(s);\n  return 0;\n}",
         "samples": [
           {
             "input": "x*y+z",
@@ -1160,60 +1045,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "(a+b)c\n",
-            "expected": "Postfix: ab+c"
-          },
-          {
-            "input": "a-b-c\n",
-            "expected": "Postfix: ab-c-"
-          },
-          {
-            "input": "a*(b+c)/d\n",
-            "expected": "Postfix: abc+*d/"
-          },
-          {
-            "input": "(a+b)(c-d)/e\n",
-            "expected": "Postfix: ab+cd-e/"
-          }
-        ]
+        {
+          "input": "(x+c/(x-b))",
+          "expected": "Postfix: xcxb-/+"
+        },
+        {
+          "input": "(z*z)+(d/y)",
+          "expected": "Postfix: zz*dy/+"
+        },
+        {
+          "input": "a/z+b*a",
+          "expected": "Postfix: az/ba*+"
+        },
+        {
+          "input": "(b/(d/c))",
+          "expected": "Postfix: bdc//"
+        },
+        {
+          "input": "(b/c*z)",
+          "expected": "Postfix: bc/z*"
+        },
+        {
+          "input": "y-d*d",
+          "expected": "Postfix: ydd*-"
+        }
+      ],
+        "sol": "void infixToPostfix(char s[]) {\n  char stack[105];\n  int top = -1;\n  printf(\"Postfix: \");\n  for (int i = 0; s[i] != '\\0'; i++) {\n    char c = s[i];\n    if (c >= 'a' && c <= 'z') {\n      printf(\"%c\", c);\n    } else if (c == '(') {\n      top++;\n      stack[top] = c;\n    } else if (c == ')') {\n      while (top >= 0 && stack[top] != '(') {\n        printf(\"%c\", stack[top]);\n        top--;\n      }\n      if (top >= 0 && stack[top] == '(') top--;\n    } else {\n      while (top >= 0 && stack[top] != '(' &&\n             precedence(stack[top]) >= precedence(c)) {\n        printf(\"%c\", stack[top]);\n        top--;\n      }\n      top++;\n      stack[top] = c;\n    }\n  }\n  while (top >= 0) {\n    if (stack[top] != '(') printf(\"%c\", stack[top]);\n    top--;\n  }\n  printf(\"\\n\");\n}"
       },
       {
         "id": "u2_d3",
-        "title": "Q3. REVERSE A WORD USING A STACK",
-        "ps": "Vikram creates a word game where the game shows a mirror image of the typed word using a stack. The function reverseWord() in the editable area contains errors. Debug the code so that the program prints the expected output.",
+        "title": "Q3. Reverse a Word using a Stack",
+        "ps": "Vikram creates a word game in which the player types a word and the game shows its mirror image, which is the same word written backwards. Since a stack gives out the items in the opposite order to the order in which they were put in, he pushes every letter of the word onto a stack and then pops all the letters to print them.\n\nThe function reverseWord() in the editable area is meant to print the reversed word using a stack, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line contains a string s representing the word typed by the player, without spaces.",
+        "outFmt": "Print \"Reversed: \" followed by the letters of the word in reverse order.",
+        "cons": "1 ≤ length of s ≤ 100\ns contains only English letters.",
         "sampleIn": "queue",
         "sampleOut": "Reversed: eueuq",
-        "header": "#include <stdio.h>",
-        "buggy": "void reverseWord(char s[]) {\n    char stack[105];\n    int top = -1;\n    for (int i = 0; s[i] != '\\0'; i++) {\n        stack[top] = s[i];\n        top++;\n    }\n    printf(\"Reversed: \");\n    while (top > 0) {\n        printf(\"%c\", stack[top]);\n        top--;\n    }\n    printf(\"\\n\");\n}",
-        "footer": "int main() {\n    char s[105];\n    scanf(\"%s\", s);\n    reverseWord(s);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "queue\n",
-            "expected": "Reversed: eueuq"
-          },
-          {
-            "input": "tree\n",
-            "expected": "Reversed: eert"
-          },
-          {
-            "input": "a\n",
-            "expected": "Reversed: a"
-          },
-          {
-            "input": "level\n",
-            "expected": "Reversed: level"
-          },
-          {
-            "input": "Programming\n",
-            "expected": "Reversed: gnimmargorP"
-          },
-          {
-            "input": "DataStructures\n",
-            "expected": "Reversed: serutcurtSataD"
-          }
-        ],
-        "sol": "void reverseWord(char s[]) {\n    char stack[105];\n    int top = -1;\n    for (int i = 0; s[i] != '\\0'; i++) {\n        top++;\n        stack[top] = s[i];\n    }\n    printf(\"Reversed: \");\n    while (top >= 0) {\n        printf(\"%c\", stack[top]);\n        top--;\n    }\n    printf(\"\\n\");\n}",
+        "header": "#include <stdio.h>\n#include <string.h>",
+        "buggy": "void reverseWord(char s[]) {\n  char stack[105];\n  int top = -1;\n  int len = strlen(s);\n  for (int i = 0; i <= len; i++) {\n    top++;\n    stack[top] = s[i];\n  }\n  printf(\"Reversed:\");\n  while (top > 0) {\n    printf(\"%c\", stack[top]);\n    top--;\n  }\n  printf(\"\\n\");\n}",
+        "footer": "int main() {\n  char s[105];\n  scanf(\"%s\", s);\n  reverseWord(s);\n  return 0;\n}",
         "samples": [
           {
             "input": "queue",
@@ -1226,59 +1096,44 @@ const DB = {
         ],
         "hidden_cases": [
           {
-            "input": "a\n",
+            "input": "queue",
+            "expected": "Reversed: eueuq"
+          },
+          {
+            "input": "tree",
+            "expected": "Reversed: eert"
+          },
+          {
+            "input": "a",
             "expected": "Reversed: a"
           },
           {
-            "input": "level\n",
+            "input": "level",
             "expected": "Reversed: level"
           },
           {
-            "input": "Programming\n",
+            "input": "Programming",
             "expected": "Reversed: gnimmargorP"
           },
           {
-            "input": "DataStructures\n",
+            "input": "DataStructures",
             "expected": "Reversed: serutcurtSataD"
           }
-        ]
+        ],
+        "sol": "void reverseWord(char s[]) {\n  char stack[105];\n  int top = -1;\n  int len = strlen(s);\n  for (int i = 0; i < len; i++) {\n    top++;\n    stack[top] = s[i];\n  }\n  printf(\"Reversed: \");\n  while (top >= 0) {\n    printf(\"%c\", stack[top]);\n    top--;\n  }\n  printf(\"\\n\");\n}"
       },
       {
         "id": "u2_d4",
-        "title": "Q4. LINEAR QUEUE IMPLEMENTATION USING ARRAY",
-        "ps": "Sanjay manages the token system of a bank branch using a queue in a simple linear array. The functions enqueue(), dequeue() and showFront() contain errors. Debug the code so that the program prints the expected output.",
+        "title": "Q4. Linear Queue Implementation using Array",
+        "ps": "Sanjay manages the token system of a bank branch. Customers take a token and are served in the order they arrived, so the tokens are kept in a queue stored in a simple linear array with a fixed capacity.\n\nA new token is added at the rear, the token at the front is served next, and the counter display can also show which token is at the front without serving it. In this simple array queue, the rear index only moves forward, so the space of tokens that were already served is not reused.\n\nThe functions enqueue(), dequeue() and showFront() in the editable area implement this queue, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line contains an integer c representing the capacity of the queue. The second line contains an integer m representing the number of operations. Each of the next m lines contains two integers t and x, where t is the operation type:\n\n1 for enqueue, 2 for dequeue, 3 for front.\n\nFor operations 2 and 3, x is 0 and should be ignored.",
+        "outFmt": "For an enqueue attempted when the rear has reached the capacity, print \"Queue Overflow\".\n\nFor a successful enqueue, print nothing.\n\nFor every dequeue, print \"Dequeued: \" followed by the removed token, or \"Queue Underflow\" if the queue is empty.\n\nFor every front operation, print \"Front: \" followed by the token at the front, or \"Queue is empty\" if the queue is empty.",
+        "cons": "1 ≤ c ≤ 100\n1 ≤ m ≤ 50\n1≤t≤3\n0 ≤ x ≤ 1000",
         "sampleIn": "2\n3\n1 7\n1 8\n3 0",
         "sampleOut": "Front: 7",
-        "header": "#include <stdio.h>\nint queue[105];\nint front = 0;\nint rear = 0;\nint capacity;",
-        "buggy": "void enqueue(int x) {\n    if (rear > capacity) {\n        printf(\"Queue Overflow\\n\");\n        return;\n    }\n    queue[rear++] = x;\n}\nvoid dequeue() {\n    if (front > rear) {\n        printf(\"Queue Underflow\\n\");\n        return;\n    }\n    front++;\n    printf(\"Dequeued: %d\\n\", queue[front]);\n}\nvoid showFront() {\n    if (front >= rear) {\n        printf(\"Queue is empty\\n\");\n        return;\n    }\n    printf(\"Front: %d\\n\", queue[front]);\n}",
-        "footer": "void process(int t, int x) {\n    if (t == 1) enqueue(x);\n    else if (t == 2) dequeue();\n    else showFront();\n}\nint main() {\n    int m;\n    scanf(\"%d\", &capacity);\n    scanf(\"%d\", &m);\n    for (int i = 0; i < m; i++) {\n        int t, x;\n        scanf(\"%d %d\", &t, &x);\n        process(t, x);\n    }\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "2\n3\n1 7\n1 8\n3 0\n",
-            "expected": "Front: 7"
-          },
-          {
-            "input": "3\n1\n2 0\n",
-            "expected": "Queue Underflow"
-          },
-          {
-            "input": "2\n3\n2 0\n3 0\n1 5\n",
-            "expected": "Queue Underflow\nQueue is empty"
-          },
-          {
-            "input": "2\n5\n1 1\n1 2\n1 3\n2 0\n1 4\n",
-            "expected": "Queue Overflow\nDequeued: 1\nQueue Overflow"
-          },
-          {
-            "input": "1\n5\n1 9\n3 0\n2 0\n1 8\n3 0\n",
-            "expected": "Front: 9\nDequeued: 9\nQueue Overflow\nQueue is empty"
-          },
-          {
-            "input": "5\n9\n1 10\n1 20\n1 30\n2 0\n3 0\n1 40\n3 0\n2 0\n3 0\n",
-            "expected": "Dequeued: 10\nFront: 20\nFront: 20\nDequeued: 20\nFront: 30"
-          }
-        ],
-        "sol": "void enqueue(int x) {\n    if (rear == capacity) {\n        printf(\"Queue Overflow\\n\");\n        return;\n    }\n    queue[rear] = x;\n    rear++;\n}\nvoid dequeue() {\n    if (front == rear) {\n        printf(\"Queue Underflow\\n\");\n        return;\n    }\n    printf(\"Dequeued: %d\\n\", queue[front]);\n    front++;\n}\nvoid showFront() {\n    if (front == rear) {\n        printf(\"Queue is empty\\n\");\n        return;\n    }\n    printf(\"Front: %d\\n\", queue[front]);\n}",
+        "header": "#include <stdio.h>\nint queue[105];\nint front = -1;\nint rear = -1;\nint capacity;",
+        "buggy": "void enqueue(int x) {\n  if (rear == capacity) {\n    printf(\"Queue Overflow\\n\");\n    return;\n  }\n  if (front == -1) front = 0;\n  queue[++rear] = x;\n}\nvoid dequeue() {\n  if (front == -1) {\n    printf(\"Queue Underflow\\n\");\n    return;\n  }\n  printf(\"Dequeued: %d\\n\", queue[front]);\n  front++;\n}\nvoid showFront() {\n  if (front == -1 || front > rear) {\n    printf(\"Queue is empty\\n\");\n    return;\n  }\n  printf(\"Front: %d\\n\", queue[front++]);\n}",
+        "footer": "void process(int t, int x) {\n  if (t == 1)\n    enqueue(x);\n  else if (t == 2)\n    dequeue();\n  else\n    showFront();\n}\nint main() {\n  int m;\n  scanf(\"%d\", &capacity);\n  scanf(\"%d\", &m);\n  for (int i = 0; i < m; i++) {\n    int t, x;\n    scanf(\"%d %d\", &t, &x);\n    process(t, x);\n  }\n  return 0;\n}",
         "samples": [
           {
             "input": "2\n3\n1 7\n1 8\n3 0",
@@ -1290,60 +1145,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "2\n3\n2 0\n3 0\n1 5\n",
-            "expected": "Queue Underflow\nQueue is empty"
-          },
-          {
-            "input": "2\n5\n1 1\n1 2\n1 3\n2 0\n1 4\n",
-            "expected": "Queue Overflow\nDequeued: 1\nQueue Overflow"
-          },
-          {
-            "input": "1\n5\n1 9\n3 0\n2 0\n1 8\n3 0\n",
-            "expected": "Front: 9\nDequeued: 9\nQueue Overflow\nQueue is empty"
-          },
-          {
-            "input": "5\n9\n1 10\n1 20\n1 30\n2 0\n3 0\n1 40\n3 0\n2 0\n3 0\n",
-            "expected": "Dequeued: 10\nFront: 20\nFront: 20\nDequeued: 20\nFront: 30"
-          }
-        ]
+        {
+          "input": "3\n7\n2 0\n1 20\n1 33\n3 0\n1 71\n3 0\n3 0",
+          "expected": "Queue Underflow\nFront: 20\nFront: 20\nFront: 20"
+        },
+        {
+          "input": "4\n7\n1 41\n3 0\n3 0\n2 0\n1 54\n1 74\n2 0",
+          "expected": "Front: 41\nFront: 41\nDequeued: 41\nDequeued: 54"
+        },
+        {
+          "input": "1\n3\n1 77\n2 0\n1 20",
+          "expected": "Dequeued: 77\nQueue Overflow"
+        },
+        {
+          "input": "1\n5\n1 8\n3 0\n1 9\n1 7\n1 27",
+          "expected": "Front: 8\nQueue Overflow\nQueue Overflow\nQueue Overflow"
+        },
+        {
+          "input": "4\n3\n1 40\n3 0\n2 0",
+          "expected": "Front: 40\nDequeued: 40"
+        },
+        {
+          "input": "4\n8\n2 0\n1 44\n1 80\n1 73\n3 0\n1 64\n2 0\n1 53",
+          "expected": "Queue Underflow\nFront: 44\nDequeued: 44\nQueue Overflow"
+        }
+      ],
+        "sol": "void enqueue(int x) {\n  if (rear == capacity - 1) {\n    printf(\"Queue Overflow\\n\");\n    return;\n  }\n  if (front == -1) front = 0;\n  queue[++rear] = x;\n}\nvoid dequeue() {\n  if (front == -1 || front > rear) {\n    printf(\"Queue Underflow\\n\");\n    return;\n  }\n  printf(\"Dequeued: %d\\n\", queue[front]);\n  front++;\n}\nvoid showFront() {\n  if (front == -1 || front > rear) {\n    printf(\"Queue is empty\\n\");\n    return;\n  }\n  printf(\"Front: %d\\n\", queue[front]);\n}"
       },
       {
         "id": "u2_d5",
-        "title": "Q5. HOT POTATO GAME USING A QUEUE",
-        "ps": "Farah organises the hot potato game where n children stand in line in a queue. Every round, k-1 children pass the potato and rejoin rear; the k-th child leaves. Debug hotPotato() so that the program prints each eliminated child and the winner.",
+        "title": "Q5. Hot Potato Game using a Queue",
+        "ps": "Farah organises the hot potato game at a children's party. The n children, numbered 1 to n, stand in a line in that order and are kept in a queue. In every round, the first k - 1 children of the queue pass the potato on and go to the back of the queue in the same order, and then the k-th child at the front holds the potato when the music stops and leaves the game. The rounds continue until only one child is left, who is the winner.\n\nThe function hotPotato() in the editable area is meant to print every child who leaves the game and then the winner, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line contains two space-separated integers n and k representing the number of children and the counting number used in every round.",
+        "outFmt": "Print \"Eliminated: \" followed by the number of the child who leaves in each round, one child per line, in the order they leave.\n\nThe last line prints \"Winner: \" followed by the number of the child who is left.",
+        "cons": "1 ≤ n ≤ 20\n1 ≤ k ≤ 10",
         "sampleIn": "3 2",
         "sampleOut": "Eliminated: 2\nEliminated: 1\nWinner: 3",
         "header": "#include <stdio.h>",
-        "buggy": "void hotPotato(int n, int k) {\n    int queue[505];\n    int front = 0, rear = 0;\n    for (int i = 1; i <= n; i++) queue[rear++] = i;\n    while (rear - front > 0) {\n        for (int j = 0; j < k; j++) queue[rear++] = queue[front++];\n        printf(\"Eliminated: %d\\n\", queue[front++]);\n    }\n    printf(\"Winner: %d\\n\", queue[front]);\n}",
-        "footer": "int main() {\n    int n, k;\n    scanf(\"%d %d\", &n, &k);\n    hotPotato(n, k);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "3 2\n",
-            "expected": "Eliminated: 2\nEliminated: 1\nWinner: 3"
-          },
-          {
-            "input": "5 3\n",
-            "expected": "Eliminated: 3\nEliminated: 1\nEliminated: 5\nEliminated: 2\nWinner: 4"
-          },
-          {
-            "input": "1 3\n",
-            "expected": "Winner: 1"
-          },
-          {
-            "input": "4 1\n",
-            "expected": "Eliminated: 1\nEliminated: 2\nEliminated: 3\nWinner: 4"
-          },
-          {
-            "input": "7 5\n",
-            "expected": "Eliminated: 5\nEliminated: 3\nEliminated: 2\nEliminated: 4\nEliminated: 7\nEliminated: 1\nWinner: 6"
-          },
-          {
-            "input": "10 4\n",
-            "expected": "Eliminated: 4\nEliminated: 8\nEliminated: 2\nEliminated: 7\nEliminated: 3\nEliminated: 10\nEliminated: 9\nEliminated: 1\nEliminated: 6\nWinner: 5"
-          }
-        ],
-        "sol": "void hotPotato(int n, int k) {\n    int queue[505];\n    int front = 0, rear = 0;\n    for (int i = 1; i <= n; i++) {\n        queue[rear] = i;\n        rear++;\n    }\n    while (rear - front > 1) {\n        for (int j = 1; j < k; j++) {\n            queue[rear] = queue[front];\n            rear++;\n            front++;\n        }\n        printf(\"Eliminated: %d\\n\", queue[front]);\n        front++;\n    }\n    printf(\"Winner: %d\\n\", queue[front]);\n}",
+        "buggy": "void hotPotato(int n, int k) {\n  int queue[505];\n  int front = 0, rear = 0;\n  for (int i = 1; i <= n; i++) {\n    queue[rear] = i;\n    rear++;\n  }\n  while (rear - front > 0) {\n    for (int j = 0; j < k; j++) {\n      queue[rear] = queue[front];\n      rear++;\n      front++;\n    }\n    printf(\"Eliminated: %d\\n\", queue[front]);\n    front++;\n  }\n}",
+        "footer": "int main() {\n  int n, k;\n  scanf(\"%d %d\", &n, &k);\n  hotPotato(n, k);\n  return 0;\n}",
         "samples": [
           {
             "input": "3 2",
@@ -1356,24 +1196,32 @@ const DB = {
         ],
         "hidden_cases": [
           {
-            "input": "1 3\n",
+            "input": "3 2",
+            "expected": "Eliminated: 2\nEliminated: 1\nWinner: 3"
+          },
+          {
+            "input": "5 3",
+            "expected": "Eliminated: 3\nEliminated: 1\nEliminated: 5\nEliminated: 2\nWinner: 4"
+          },
+          {
+            "input": "1 3",
             "expected": "Winner: 1"
           },
           {
-            "input": "4 1\n",
+            "input": "4 1",
             "expected": "Eliminated: 1\nEliminated: 2\nEliminated: 3\nWinner: 4"
           },
           {
-            "input": "7 5\n",
+            "input": "7 5",
             "expected": "Eliminated: 5\nEliminated: 3\nEliminated: 2\nEliminated: 4\nEliminated: 7\nEliminated: 1\nWinner: 6"
           },
           {
-            "input": "10 4\n",
+            "input": "10 4",
             "expected": "Eliminated: 4\nEliminated: 8\nEliminated: 2\nEliminated: 7\nEliminated: 3\nEliminated: 10\nEliminated: 9\nEliminated: 1\nEliminated: 6\nWinner: 5"
           }
-        ]
-      }
-    ],
+        ],
+        "sol": "void hotPotato(int n, int k) {\n  int queue[505];\n  int front = 0, rear = 0;\n  for (int i = 1; i <= n; i++) {\n    queue[rear] = i;\n    rear++;\n  }\n  while (rear - front > 1) {\n    for (int j = 1; j < k; j++) {\n      queue[rear] = queue[front];\n      rear++;\n      front++;\n    }\n    printf(\"Eliminated: %d\\n\", queue[front]);\n    front++;\n  }\n  printf(\"Winner: %d\\n\", queue[front]);\n}"
+      }],
     "cod": [
       {
         "id": "u2_c1",
@@ -1869,40 +1717,16 @@ const DB = {
     "debug": [
       {
         "id": "u3_d1",
-        "title": "Q1. FIND MINIMUM IN A BINARY SEARCH TREE",
-        "ps": "Suresh keeps the book IDs of a library in a binary search tree. Debug findMin() so that the program prints the smallest book ID in the tree.",
+        "title": "Q1. Find Minimum in a Binary Search Tree",
+        "ps": "Suresh keeps the book IDs of a library in a binary search tree, where smaller IDs go to the left subtree and larger or equal IDs go to the right subtree. To open the catalogue from the oldest ID, he needs the smallest ID in the tree, which is found by moving to the left child again and again until there is no left child.\n\nThe function findMin() in the editable area is meant to return the smallest ID, but the code contains errors. Debug the code so that the program prints the expected output.\n\nNote: The helper code uses the malloc() function to create the nodes of the tree.",
+        "inFmt": "The first line of input consists of an integer n representing the number of book IDs.\n\nThe second line of input consists of n space-separated integers representing the book IDs in the order they are inserted.",
+        "outFmt": "The first line of output prints \"Minimum: \" followed by an integer representing the smallest book ID in the tree.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ book IDs[i] ≤ 1000",
         "sampleIn": "5\n30 20 40 10 25",
         "sampleOut": "Minimum: 10",
-        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n    int data;\n    struct Node *left;\n    struct Node *right;\n};\nstruct Node *insert(struct Node *root, int x) {\n    if (root == NULL) {\n        struct Node *node = (struct Node *)malloc(sizeof(struct Node));\n        node->data = x; node->left = NULL; node->right = NULL;\n        return node;\n    }\n    if (x < root->data) root->left = insert(root->left, x);\n    else root->right = insert(root->right, x);\n    return root;\n}",
-        "buggy": "int findMin(struct Node *root) {\n    struct Node *curr = root;\n    while (curr->right != NULL)\n        curr = curr->right;\n    return curr->data;\n}",
-        "footer": "int main() {\n    int n;\n    struct Node *root = NULL;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int x;\n        scanf(\"%d\", &x);\n        root = insert(root, x);\n    }\n    printf(\"Minimum: %d\\n\", findMin(root));\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "5\n30 20 40 10 25\n",
-            "expected": "Minimum: 10"
-          },
-          {
-            "input": "4\n15 18 12 9\n",
-            "expected": "Minimum: 9"
-          },
-          {
-            "input": "1\n10\n",
-            "expected": "Minimum: 10"
-          },
-          {
-            "input": "6\n10 20 30 40 50 60\n",
-            "expected": "Minimum: 10"
-          },
-          {
-            "input": "8\n8 3 10 1 6 14 4 7\n",
-            "expected": "Minimum: 1"
-          },
-          {
-            "input": "7\n90 60 120 40 70 100 150\n",
-            "expected": "Minimum: 40"
-          }
-        ],
-        "sol": "int findMin(struct Node *root) {\n    struct Node *curr = root;\n    while (curr->left != NULL)\n        curr = curr->left;\n    return curr->data;\n}",
+        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n  int data;\n  struct Node *left;\n  struct Node *right;\n};\nstruct Node *insert(struct Node *root, int x) {\n  if (root == NULL) {\n    struct Node *node =\n        (struct Node *)malloc(sizeof(struct Node));\n    node->data = x;\n    node->left = NULL;\n    node->right = NULL;\n    return node;\n  }\n  if (x < root->data)\n    root->left = insert(root->left, x);\n  else\n    root->right = insert(root->right, x);\n  return root;\n}",
+        "buggy": "int findMin(struct Node *root) {\n  struct Node *curr = root;\n  while (curr->right != NULL)\n    curr = curr->right;\n  return curr->data;\n}",
+        "footer": "int main() {\n  int n;\n  struct Node *root = NULL;\n  scanf(\"%d\", &n);\n  for (int i = 0; i < n; i++) {\n    int x;\n    scanf(\"%d\", &x);\n    root = insert(root, x);\n  }\n  printf(\"Minimum: %d\\n\", findMin(root));\n  return 0;\n}",
         "samples": [
           {
             "input": "5\n30 20 40 10 25",
@@ -1914,60 +1738,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n10\n",
-            "expected": "Minimum: 10"
-          },
-          {
-            "input": "6\n10 20 30 40 50 60\n",
-            "expected": "Minimum: 10"
-          },
-          {
-            "input": "8\n8 3 10 1 6 14 4 7\n",
-            "expected": "Minimum: 1"
-          },
-          {
-            "input": "7\n90 60 120 40 70 100 150\n",
-            "expected": "Minimum: 40"
-          }
-        ]
+        {
+          "input": "2\n13 89",
+          "expected": "Minimum: 13"
+        },
+        {
+          "input": "5\n60 50 78 69 9",
+          "expected": "Minimum: 9"
+        },
+        {
+          "input": "7\n98 85 59 51 1 94 56",
+          "expected": "Minimum: 1"
+        },
+        {
+          "input": "2\n42 16",
+          "expected": "Minimum: 16"
+        },
+        {
+          "input": "7\n63 49 78 94 82 31 98",
+          "expected": "Minimum: 31"
+        },
+        {
+          "input": "4\n56 32 92 48",
+          "expected": "Minimum: 32"
+        }
+      ],
+        "sol": "int findMin(struct Node *root) {\n  struct Node *curr = root;\n  while (curr->left != NULL)\n    curr = curr->left;\n  return curr->data;\n}"
       },
       {
         "id": "u3_d2",
-        "title": "Q2. COUNT LEAF NODES IN A BINARY SEARCH TREE",
-        "ps": "Hema wants a program that counts all the leaf nodes of a binary search tree using recursion. Debug countLeaves() so that the program prints the expected number of leaf nodes.",
+        "title": "Q2. Count Leaf Nodes in a Binary Search Tree",
+        "ps": "Hema is studying the structure of an employee hierarchy stored in a binary search tree. A leaf node is a node that has neither a left child nor a right child. She wants a program that counts all the leaf nodes of the tree using recursion: an empty tree has 0 leaves, a node without children counts as 1 leaf, and for every other node the leaves of its left and right subtrees are added.\n\nThe function countLeaves() in the editable area is meant to do this, but the code contains errors. Debug the code so that the program prints the expected output.\n\nNote: The helper code uses the malloc() function to create the nodes of the tree.",
+        "inFmt": "The first line of input consists of an integer n representing the number of employee IDs.\n\nThe second line of input consists of n space-separated integers representing the employee IDs in the order they are inserted.",
+        "outFmt": "The first line of output prints \"Leaf Nodes: \" followed by an integer representing the number of leaf nodes in the tree.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ employee IDs[i] ≤ 1000",
         "sampleIn": "3\n20 10 30",
         "sampleOut": "Leaf Nodes: 2",
-        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n    int data;\n    struct Node *left;\n    struct Node *right;\n};\nstruct Node *insert(struct Node *root, int x) {\n    if (root == NULL) {\n        struct Node *node = (struct Node *)malloc(sizeof(struct Node));\n        node->data = x; node->left = NULL; node->right = NULL;\n        return node;\n    }\n    if (x < root->data) root->left = insert(root->left, x);\n    else root->right = insert(root->right, x);\n    return root;\n}",
-        "buggy": "int countLeaves(struct Node *root) {\n    if (root == NULL)\n        return 1;\n    if (root->left == NULL && root->right == NULL)\n        return 0;\n    return countLeaves(root->left) + countLeaves(root->right);\n}",
-        "footer": "int main() {\n    int n;\n    struct Node *root = NULL;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int x;\n        scanf(\"%d\", &x);\n        root = insert(root, x);\n    }\n    printf(\"Leaf Nodes: %d\\n\", countLeaves(root));\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "3\n20 10 30\n",
-            "expected": "Leaf Nodes: 2"
-          },
-          {
-            "input": "4\n20 40 30 50\n",
-            "expected": "Leaf Nodes: 2"
-          },
-          {
-            "input": "1\n10\n",
-            "expected": "Leaf Nodes: 1"
-          },
-          {
-            "input": "4\n10 20 30 40\n",
-            "expected": "Leaf Nodes: 1"
-          },
-          {
-            "input": "7\n10 40 20 60 30 50 70\n",
-            "expected": "Leaf Nodes: 3"
-          },
-          {
-            "input": "8\n30 60 40 50 45 55 70 80\n",
-            "expected": "Leaf Nodes: 3"
-          }
-        ],
-        "sol": "int countLeaves(struct Node *root) {\n    if (root == NULL)\n        return 0;\n    if (root->left == NULL && root->right == NULL)\n        return 1;\n    return countLeaves(root->left) + countLeaves(root->right);\n}",
+        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n  int data;\n  struct Node *left;\n  struct Node *right;\n};\nstruct Node *insert(struct Node *root, int x) {\n  if (root == NULL) {\n    struct Node *node =\n        (struct Node *)malloc(sizeof(struct Node));\n    node->data = x;\n    node->left = NULL;\n    node->right = NULL;\n    return node;\n  }\n  if (x < root->data)\n    root->left = insert(root->left, x);\n  else\n    root->right = insert(root->right, x);\n  return root;\n}",
+        "buggy": "int countLeaves(struct Node *root) {\n  if (root == NULL) return 1;\n  return countLeaves(root->left) + countLeaves(root->right);\n}",
+        "footer": "int main() {\n  int n;\n  struct Node *root = NULL;\n  scanf(\"%d\", &n);\n  for (int i = 0; i < n; i++) {\n    int x;\n    scanf(\"%d\", &x);\n    root = insert(root, x);\n  }\n  printf(\"Leaf Nodes: %d\\n\", countLeaves(root));\n  return 0;\n}",
         "samples": [
           {
             "input": "3\n20 10 30",
@@ -1980,59 +1789,44 @@ const DB = {
         ],
         "hidden_cases": [
           {
-            "input": "1\n10\n",
+            "input": "3\n20 10 30",
+            "expected": "Leaf Nodes: 2"
+          },
+          {
+            "input": "4\n20 40 30 50",
+            "expected": "Leaf Nodes: 2"
+          },
+          {
+            "input": "1\n10",
             "expected": "Leaf Nodes: 1"
           },
           {
-            "input": "4\n10 20 30 40\n",
+            "input": "4\n10 20 30 40",
             "expected": "Leaf Nodes: 1"
           },
           {
-            "input": "7\n10 40 20 60 30 50 70\n",
+            "input": "7\n10 40 20 60 30 50 70",
             "expected": "Leaf Nodes: 3"
           },
           {
-            "input": "8\n30 60 40 50 45 55 70 80\n",
+            "input": "8\n30 60 40 50 45 55 70 80",
             "expected": "Leaf Nodes: 3"
           }
-        ]
+        ],
+        "sol": "int countLeaves(struct Node *root) {\n  if (root == NULL) return 0;\n  if (root->left == NULL && root->right == NULL)\n    return 1;\n  return countLeaves(root->left) + countLeaves(root->right);\n}"
       },
       {
         "id": "u3_d3",
-        "title": "Q3. EXTRACT MINIMUM FROM A MIN-HEAP",
-        "ps": "Tickets are stored in a binary min-heap kept in an array. Debug extractMin() so that the program correctly removes and prints the first k tickets served in order of priority.",
+        "title": "Q3. Extract Minimum from a Min-heap",
+        "ps": "Tarun runs a help desk where every ticket has a priority number and a smaller number means a more urgent ticket. The tickets are stored in a binary min-heap kept in an array. To serve a ticket, the root (the smallest value) is removed, the last element of the heap is moved to the root, and it is pushed down by swapping it with its smaller child until the heap property is restored.\n\nThe function extractMin() in the editable area is meant to remove and return the smallest priority, but the code contains errors. Debug the code so that the program prints the first k tickets served.",
+        "inFmt": "The first line of input consists of an integer n representing the number of tickets.\n\nThe second line of input consists of n space-separated integers representing the priorities in the order they arrive.\n\nThe third line of input consists of an integer k representing the number of tickets to be served.",
+        "outFmt": "The first line of output prints \"Extracted: \" followed by the k priorities removed from the heap, in the order they are removed, separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n1≤k≤n\n1 ≤ priorities[i] ≤ 1000",
         "sampleIn": "4\n12 7 3 9\n2",
         "sampleOut": "Extracted: 3 7",
-        "header": "#include <stdio.h>\nint heap[105];\nint size = 0;\nvoid insert(int x) {\n    heap[size] = x;\n    int i = size; size++;\n    while (i > 0 && heap[(i - 1) / 2] > heap[i]) {\n        int parent = (i - 1) / 2;\n        int temp = heap[parent];\n        heap[parent] = heap[i];\n        heap[i] = temp;\n        i = parent;\n    }\n}",
-        "buggy": "int extractMin() {\n    int minValue = heap[0];\n    size--;\n    heap[0] = heap[size];\n    int i = 0;\n    while (2 * i + 1 < size) {\n        int child = 2 * i + 1;\n        if (child + 1 < size && heap[child + 1] > heap[child])\n            child++;\n        if (heap[i] >= heap[child])\n            break;\n        int temp = heap[i];\n        heap[i] = heap[child];\n        heap[child] = temp;\n        i = child;\n    }\n    return minValue;\n}",
-        "footer": "int main() {\n    int n, k;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int x;\n        scanf(\"%d\", &x);\n        insert(x);\n    }\n    scanf(\"%d\", &k);\n    printf(\"Extracted:\");\n    for (int i = 0; i < k; i++)\n        printf(\" %d\", extractMin());\n    printf(\"\\n\");\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "4\n12 7 3 9\n2\n",
-            "expected": "Extracted: 3 7"
-          },
-          {
-            "input": "5\n20 15 10 5 1\n3\n",
-            "expected": "Extracted: 1 5 10"
-          },
-          {
-            "input": "1\n7\n1\n",
-            "expected": "Extracted: 7"
-          },
-          {
-            "input": "4\n9 4 7 1\n4\n",
-            "expected": "Extracted: 1 4 7 9"
-          },
-          {
-            "input": "8\n9 8 7 6 5 4 3 2\n5\n",
-            "expected": "Extracted: 2 3 4 5 6"
-          },
-          {
-            "input": "7\n15 10 20 5 30 25 1\n7\n",
-            "expected": "Extracted: 1 5 10 15 20 25 30"
-          }
-        ],
-        "sol": "int extractMin() {\n    int minValue = heap[0];\n    size--;\n    heap[0] = heap[size];\n    int i = 0;\n    while (2 * i + 1 < size) {\n        int child = 2 * i + 1;\n        if (child + 1 < size && heap[child + 1] < heap[child])\n            child++;\n        if (heap[i] <= heap[child])\n            break;\n        int temp = heap[i];\n        heap[i] = heap[child];\n        heap[child] = temp;\n        i = child;\n    }\n    return minValue;\n}",
+        "header": "#include <stdio.h>\nint heap[105];\nint size = 0;\nvoid insert(int x) {\n  heap[size] = x;\n  int i = size;\n  size++;\n  while (i > 0 && heap[(i - 1) / 2] > heap[i]) {\n    int parent = (i - 1) / 2;\n    int temp = heap[parent];\n    heap[parent] = heap[i];\n    heap[i] = temp;\n    i = parent;\n  }\n}",
+        "buggy": "int extractMin() {\n  int minValue = heap[0];\n  size--;\n  heap[0] = heap[size];\n  return minValue;\n}",
+        "footer": "int main() {\n  int n, k;\n  scanf(\"%d\", &n);\n  for (int i = 0; i < n; i++) {\n    int x;\n    scanf(\"%d\", &x);\n    insert(x);\n  }\n  scanf(\"%d\", &k);\n  printf(\"Extracted:\");\n  for (int i = 0; i < k; i++) printf(\" %d\", extractMin());\n  printf(\"\\n\");\n  return 0;\n}",
         "samples": [
           {
             "input": "4\n12 7 3 9\n2",
@@ -2044,60 +1838,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n7\n1\n",
-            "expected": "Extracted: 7"
-          },
-          {
-            "input": "4\n9 4 7 1\n4\n",
-            "expected": "Extracted: 1 4 7 9"
-          },
-          {
-            "input": "8\n9 8 7 6 5 4 3 2\n5\n",
-            "expected": "Extracted: 2 3 4 5 6"
-          },
-          {
-            "input": "7\n15 10 20 5 30 25 1\n7\n",
-            "expected": "Extracted: 1 5 10 15 20 25 30"
-          }
-        ]
+        {
+          "input": "7\n87 20 47 45 16 75 98\n3",
+          "expected": "Extracted: 16 20 45"
+        },
+        {
+          "input": "8\n25 61 96 61 39 27 69 71\n3",
+          "expected": "Extracted: 25 27 39"
+        },
+        {
+          "input": "4\n98 20 14 72\n2",
+          "expected": "Extracted: 14 20"
+        },
+        {
+          "input": "8\n75 90 60 93 56 60 26 86\n3",
+          "expected": "Extracted: 26 56 60"
+        },
+        {
+          "input": "3\n40 22 77\n3",
+          "expected": "Extracted: 22 40 77"
+        },
+        {
+          "input": "4\n38 76 3 30\n3",
+          "expected": "Extracted: 3 30 38"
+        }
+      ],
+        "sol": "int extractMin() {\n  int minValue = heap[0];\n  size--;\n  heap[0] = heap[size];\n  int i = 0;\n  while (2 * i + 1 < size) {\n    int child = 2 * i + 1;\n    if (child + 1 < size &&\n        heap[child + 1] < heap[child])\n      child++;\n    if (heap[i] <= heap[child])\n      break;\n    int temp = heap[i];\n    heap[i] = heap[child];\n    heap[child] = temp;\n    i = child;\n  }\n  return minValue;\n}"
       },
       {
         "id": "u3_d4",
-        "title": "Q4. CHECK WHETHER A BINARY SEARCH TREE IS BALANCED",
-        "ps": "A tree is balanced when, for every node, heights of left and right subtrees differ by at most 1. Debug height() and isBalanced() so the program prints 'Balanced' or 'Not Balanced'.",
+        "title": "Q4. Check Whether a Binary Search Tree is Balanced",
+        "ps": "Vimal is learning AVL trees and wants a program that tells him whether a given binary search tree already satisfies the AVL property. A tree is balanced when, for every node, the heights of its left and right subtrees differ by at most 1. Here the height of an empty tree is 0 and the height of a node is 1 plus the larger height of its two subtrees.\n\nThe functions height() and isBalanced() in the editable area are meant to check this property at every node, but the code contains errors. Debug the code so that the program prints the expected output.\n\nNote: The helper code uses the malloc() function to create the nodes of the tree.",
+        "inFmt": "The first line of input consists of an integer n representing the number of keys. The second line of input consists of n space-separated integers representing the keys in the order they are inserted into the binary search tree.",
+        "outFmt": "The first line of output prints \"Balanced\" if the tree satisfies the AVL property at every node, or \"Not Balanced\" otherwise.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ keys[i] ≤ 1000\nAll keys are distinct.",
         "sampleIn": "4\n20 10 30 25",
         "sampleOut": "Balanced",
-        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n    int data;\n    struct Node *left;\n    struct Node *right;\n};\nstruct Node *insert(struct Node *root, int x) {\n    if (root == NULL) {\n        struct Node *node = (struct Node *)malloc(sizeof(struct Node));\n        node->data = x; node->left = NULL; node->right = NULL;\n        return node;\n    }\n    if (x < root->data) root->left = insert(root->left, x);\n    else root->right = insert(root->right, x);\n    return root;\n}\nint max(int a, int b) { return (a > b) ? a : b; }",
-        "buggy": "int height(struct Node *root) {\n    if (root == NULL) return 0;\n    return max(height(root->left), height(root->right));\n}\nint isBalanced(struct Node *root) {\n    if (root == NULL) return 1;\n    int leftHeight = height(root->left);\n    int rightHeight = height(root->right);\n    int diff = leftHeight - rightHeight;\n    if (diff > 0 || diff < 0) return 0;\n    return isBalanced(root->left) && isBalanced(root->right);\n}",
-        "footer": "int main() {\n    int n;\n    struct Node *root = NULL;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int x;\n        scanf(\"%d\", &x);\n        root = insert(root, x);\n    }\n    if (isBalanced(root))\n        printf(\"Balanced\\n\");\n    else\n        printf(\"Not Balanced\\n\");\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "4\n20 10 30 25\n",
-            "expected": "Balanced"
-          },
-          {
-            "input": "4\n1 2 3 4\n",
-            "expected": "Not Balanced"
-          },
-          {
-            "input": "1\n10\n",
-            "expected": "Balanced"
-          },
-          {
-            "input": "3\n30 20 10\n",
-            "expected": "Not Balanced"
-          },
-          {
-            "input": "6\n40 20 60 10 30 50\n",
-            "expected": "Balanced"
-          },
-          {
-            "input": "6\n10 20 30 40 50 60\n",
-            "expected": "Not Balanced"
-          }
-        ],
-        "sol": "int height(struct Node *root) {\n    if (root == NULL)\n        return 0;\n    return 1 + max(height(root->left), height(root->right));\n}\nint isBalanced(struct Node *root) {\n    if (root == NULL)\n        return 1;\n    int leftHeight = height(root->left);\n    int rightHeight = height(root->right);\n    int diff = leftHeight - rightHeight;\n    if (diff > 1 || diff < -1)\n        return 0;\n    return isBalanced(root->left) && isBalanced(root->right);\n}",
+        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n  int data;\n  struct Node *left;\n  struct Node *right;\n};\nstruct Node *insert(struct Node *root, int x) {\n  if (root == NULL) {\n    struct Node *node =\n        (struct Node *)malloc(sizeof(struct Node));\n    node->data = x;\n    node->left = NULL;\n    node->right = NULL;\n    return node;\n  }\n  if (x < root->data)\n    root->left = insert(root->left, x);\n  else\n    root->right = insert(root->right, x);\n  return root;\n}\nint max(int a, int b) { return (a > b) ? a : b; }",
+        "buggy": "int height(struct Node *root) {\n  if (root == NULL) return 0;\n  return max(height(root->left),\n             height(root->right));\n}\nint isBalanced(struct Node *root) {\n  if (root == NULL) return 1;\n  int leftHeight = height(root->left);\n  int rightHeight = height(root->right);\n  int diff = leftHeight - rightHeight;\n  return diff <= 1 && diff >= -1;\n}",
+        "footer": "int main() {\n  int n;\n  struct Node *root = NULL;\n  scanf(\"%d\", &n);\n  for (int i = 0; i < n; i++) {\n    int x;\n    scanf(\"%d\", &x);\n    root = insert(root, x);\n  }\n  if (isBalanced(root))\n    printf(\"Balanced\\n\");\n  else\n    printf(\"Not Balanced\\n\");\n  return 0;\n}",
         "samples": [
           {
             "input": "4\n20 10 30 25",
@@ -2109,60 +1888,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n10\n",
-            "expected": "Balanced"
-          },
-          {
-            "input": "3\n30 20 10\n",
-            "expected": "Not Balanced"
-          },
-          {
-            "input": "6\n40 20 60 10 30 50\n",
-            "expected": "Balanced"
-          },
-          {
-            "input": "6\n10 20 30 40 50 60\n",
-            "expected": "Not Balanced"
-          }
-        ]
+        {
+          "input": "5\n36 35 34 33 32",
+          "expected": "Not Balanced"
+        },
+        {
+          "input": "3\n17 16 15",
+          "expected": "Not Balanced"
+        },
+        {
+          "input": "5\n29 28 27 26 25",
+          "expected": "Not Balanced"
+        },
+        {
+          "input": "6\n40 41 42 43 44 45",
+          "expected": "Not Balanced"
+        },
+        {
+          "input": "3\n34 33 32",
+          "expected": "Not Balanced"
+        },
+        {
+          "input": "4\n28 29 30 31",
+          "expected": "Not Balanced"
+        }
+      ],
+        "sol": "int height(struct Node *root) {\n  if (root == NULL) return 0;\n  return 1 + max(height(root->left),\n                 height(root->right));\n}\nint isBalanced(struct Node *root) {\n  if (root == NULL) return 1;\n  int leftHeight = height(root->left);\n  int rightHeight = height(root->right);\n  int diff = leftHeight - rightHeight;\n  if (diff > 1 || diff < -1)\n    return 0;\n  return isBalanced(root->left) &&\n         isBalanced(root->right);\n}"
       },
       {
         "id": "u3_d5",
-        "title": "Q5. FIND THE HEIGHT OF A BINARY SEARCH TREE",
-        "ps": "The height of a tree is the number of edges on the longest path from root to leaf (root-only tree has height 0, empty tree has height -1). Debug height() so that the program prints the expected height.",
+        "title": "Q5. Find the Height of a Binary Search Tree",
+        "ps": "Ganesh maintains a binary search tree of product codes and wants to know how deep the tree has grown, because a very deep tree makes searching slow. The height of a tree is the number of edges on the longest path from the root down to a leaf, so a tree with only a root has height 0 and an empty tree has height -1. The height of a node is one more than the larger of the heights of its two subtrees.\n\nThe function height() in the editable area is meant to return the height of the tree, but the code contains errors. Debug the code so that the program prints the expected output.\n\nNote: The helper code uses the malloc() function to create the nodes of the tree.",
+        "inFmt": "The first line of input consists of an integer n representing the number of product codes.\n\nThe second line of input consists of n space-separated integers representing the product codes in the order they are inserted.",
+        "outFmt": "The first line of output prints \"Height: \" followed by an integer representing the height of the tree.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ product codes[i] ≤ 1000",
         "sampleIn": "5\n30 20 40 10 25",
         "sampleOut": "Height: 2",
-        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n    int data;\n    struct Node *left;\n    struct Node *right;\n};\nstruct Node *insert(struct Node *root, int x) {\n    if (root == NULL) {\n        struct Node *node = (struct Node *)malloc(sizeof(struct Node));\n        node->data = x; node->left = NULL; node->right = NULL;\n        return node;\n    }\n    if (x < root->data) root->left = insert(root->left, x);\n    else root->right = insert(root->right, x);\n    return root;\n}",
-        "buggy": "int height(struct Node *root) {\n    if (root == NULL)\n        return 0;\n    int leftHeight = height(root->left);\n    int rightHeight = height(root->right);\n    return (leftHeight > rightHeight) ? leftHeight : rightHeight;\n}",
-        "footer": "int main() {\n    int n;\n    struct Node *root = NULL;\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) {\n        int x;\n        scanf(\"%d\", &x);\n        root = insert(root, x);\n    }\n    printf(\"Height: %d\\n\", height(root));\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "5\n30 20 40 10 25\n",
-            "expected": "Height: 2"
-          },
-          {
-            "input": "4\n5 4 3 2\n",
-            "expected": "Height: 3"
-          },
-          {
-            "input": "1\n10\n",
-            "expected": "Height: 0"
-          },
-          {
-            "input": "4\n10 20 30 40\n",
-            "expected": "Height: 3"
-          },
-          {
-            "input": "8\n8 3 10 1 6 14 4 7\n",
-            "expected": "Height: 3"
-          },
-          {
-            "input": "6\n50 40 30 20 10 60\n",
-            "expected": "Height: 4"
-          }
-        ],
-        "sol": "int height(struct Node *root) {\n    if (root == NULL)\n        return -1;\n    int leftHeight = height(root->left);\n    int rightHeight = height(root->right);\n    return 1 + ((leftHeight > rightHeight) ? leftHeight : rightHeight);\n}",
+        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n  int data;\n  struct Node *left;\n  struct Node *right;\n};\nstruct Node *insert(struct Node *root, int x) {\n  if (root == NULL) {\n    struct Node *node =\n        (struct Node *)malloc(sizeof(struct Node));\n    node->data = x;\n    node->left = NULL;\n    node->right = NULL;\n    return node;\n  }\n  if (x < root->data)\n    root->left = insert(root->left, x);\n  else\n    root->right = insert(root->right, x);\n  return root;\n}",
+        "buggy": "int height(struct Node *root) {\n  if (root == NULL) return 0;\n  int leftHeight = height(root->left);\n  int rightHeight = height(root->right);\n  return 1 + ((leftHeight < rightHeight)\n                  ? leftHeight\n                  : rightHeight);\n}",
+        "footer": "int main() {\n  int n;\n  struct Node *root = NULL;\n  scanf(\"%d\", &n);\n  for (int i = 0; i < n; i++) {\n    int x;\n    scanf(\"%d\", &x);\n    root = insert(root, x);\n  }\n  printf(\"Height: %d\\n\", height(root));\n  return 0;\n}",
         "samples": [
           {
             "input": "5\n30 20 40 10 25",
@@ -2174,25 +1938,33 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n10\n",
-            "expected": "Height: 0"
-          },
-          {
-            "input": "4\n10 20 30 40\n",
-            "expected": "Height: 3"
-          },
-          {
-            "input": "8\n8 3 10 1 6 14 4 7\n",
-            "expected": "Height: 3"
-          },
-          {
-            "input": "6\n50 40 30 20 10 60\n",
-            "expected": "Height: 4"
-          }
-        ]
-      }
-    ],
+        {
+          "input": "5\n2 3 4 5 6",
+          "expected": "Height: 4"
+        },
+        {
+          "input": "8\n10 11 12 13 14 15 16 17",
+          "expected": "Height: 7"
+        },
+        {
+          "input": "3\n22 21 20",
+          "expected": "Height: 2"
+        },
+        {
+          "input": "1\n31",
+          "expected": "Height: 0"
+        },
+        {
+          "input": "6\n33 34 35 36 37 38",
+          "expected": "Height: 5"
+        },
+        {
+          "input": "7\n32 31 30 29 28 27 26",
+          "expected": "Height: 6"
+        }
+      ],
+        "sol": "int height(struct Node *root) {\n  if (root == NULL) return -1;\n  int leftHeight = height(root->left);\n  int rightHeight = height(root->right);\n  return 1 + ((leftHeight > rightHeight)\n                  ? leftHeight\n                  : rightHeight);\n}"
+      }],
     "cod": [
       {
         "id": "u3_c1",
@@ -2690,40 +2462,16 @@ const DB = {
     "debug": [
       {
         "id": "u4_d1",
-        "title": "Q1. TOPOLOGICAL SORT",
-        "ps": "The courses form a directed acyclic graph (DAG). Debug topoSort() so that it prints the topological order, repeatedly choosing the smallest-numbered course with in-degree 0.",
+        "title": "Q1. Topological Sort",
+        "ps": "Ishaan plans the courses of a degree. The courses are numbered from 0 to v - 1. A prerequisite \"a b\" means course a must be completed before course b. The courses form a directed acyclic graph (DAG).\n\nDebug the topoSort() function so that it prints the topological order, repeatedly choosing the smallest-numbered course with in-degree 0.",
+        "inFmt": "The first line contains two integers v and e.\n\nThe next e lines contain two integers a and b representing a directed edge from a to b.",
+        "outFmt": "Print \"Topological Order: \" followed by the course numbers separated by spaces.\n\nThe courses form a directed acyclic graph (DAG).",
+        "cons": "1 <= v <= 15\n0 <= e <= 50\n0 <= a, b < v",
         "sampleIn": "4 4\n0 1\n0 2\n1 3\n2 3",
         "sampleOut": "Topological Order: 0 1 2 3",
         "header": "#include <stdio.h>\nint adj[15][15];\nvoid addEdge(int a, int b) { adj[a][b] = 1; }",
-        "buggy": "void topoSort(int v) {\n    int indeg[15] = {0};\n    int done[15] = {0};\n    for (int i = 0; i < v; i++) {\n        for (int j = 0; j < v; j++) {\n            indeg[i] += adj[j][i];\n        }\n    }\n    printf(\"Topological Order:\");\n    for (int count = 0; count < v; count++) {\n        for (int u = 0; u < v; u++) {\n            if (done[u] == 0 && indeg[u] <= 0) {\n                printf(\" %d\", u);\n                done[u] = 1;\n                break;\n            }\n        }\n    }\n    printf(\"\\n\");\n}",
-        "footer": "int main() {\n    int v, e;\n    scanf(\"%d %d\", &v, &e);\n    for (int i = 0; i < e; i++) {\n        int a, b;\n        scanf(\"%d %d\", &a, &b);\n        addEdge(a, b);\n    }\n    topoSort(v);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "4 4\n0 1\n0 2\n1 3\n2 3\n",
-            "expected": "Topological Order: 0 1 2 3"
-          },
-          {
-            "input": "3 2\n2 1\n1 0\n",
-            "expected": "Topological Order: 2 1 0"
-          },
-          {
-            "input": "1 0\n",
-            "expected": "Topological Order: 0"
-          },
-          {
-            "input": "4 3\n3 2\n2 1\n1 0\n",
-            "expected": "Topological Order: 3 2 1 0"
-          },
-          {
-            "input": "5 5\n0 2\n0 3\n1 3\n1 4\n2 4\n",
-            "expected": "Topological Order: 0 1 2 3 4"
-          },
-          {
-            "input": "7 8\n0 1\n0 2\n1 3\n2 3\n3 4\n5 4\n5 6\n6 4\n",
-            "expected": "Topological Order: 0 1 2 3 5 6 4"
-          }
-        ],
-        "sol": "void topoSort(int v) {\n    int indeg[15] = {0};\n    int done[15] = {0};\n    for (int i = 0; i < v; i++) {\n        for (int j = 0; j < v; j++) {\n            indeg[j] += adj[i][j];\n        }\n    }\n    printf(\"Topological Order:\");\n    for (int count = 0; count < v; count++) {\n        for (int u = 0; u < v; u++) {\n            if (done[u] == 0 && indeg[u] == 0) {\n                printf(\" %d\", u);\n                done[u] = 1;\n                for (int w = 0; w < v; w++) {\n                    indeg[w] -= adj[u][w];\n                }\n                break;\n            }\n        }\n    }\n    printf(\"\\n\");\n}",
+        "buggy": "void topoSort(int v) {\n  int indeg[15] = {0};\n  int done[15] = {0};\n  for (int i = 0; i < v; i++)\n    for (int j = 0; j < v; j++) indeg[j] += adj[i][j];\n  printf(\"Topological Order:\");\n  for (int count = 0; count < v; count++) {\n    for (int u = 0; u < v; u++) {\n      if (done[u] == 0 && indeg[u] == 1) {\n        printf(\" %d\", u);\n        done[u] = 1;\n        break;\n      }\n    }\n  }\n  printf(\"\\n\");\n}",
+        "footer": "int main() {\n  int v, e;\n  scanf(\"%d %d\", &v, &e);\n  for (int i = 0; i < e; i++) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    addEdge(a, b);\n  }\n  topoSort(v);\n  return 0;\n}",
         "samples": [
           {
             "input": "4 4\n0 1\n0 2\n1 3\n2 3",
@@ -2736,59 +2484,44 @@ const DB = {
         ],
         "hidden_cases": [
           {
-            "input": "1 0\n",
+            "input": "4 4\n0 1\n0 2\n1 3\n2 3",
+            "expected": "Topological Order: 0 1 2 3"
+          },
+          {
+            "input": "3 2\n2 1\n1 0",
+            "expected": "Topological Order: 2 1 0"
+          },
+          {
+            "input": "1 0",
             "expected": "Topological Order: 0"
           },
           {
-            "input": "4 3\n3 2\n2 1\n1 0\n",
+            "input": "4 3\n3 2\n2 1\n1 0",
             "expected": "Topological Order: 3 2 1 0"
           },
           {
-            "input": "5 5\n0 2\n0 3\n1 3\n1 4\n2 4\n",
+            "input": "5 5\n0 2\n0 3\n1 3\n1 4\n2 4",
             "expected": "Topological Order: 0 1 2 3 4"
           },
           {
-            "input": "7 8\n0 1\n0 2\n1 3\n2 3\n3 4\n5 4\n5 6\n6 4\n",
+            "input": "7 8\n0 1\n0 2\n1 3\n2 3\n3 4\n5 4\n5 6\n6 4",
             "expected": "Topological Order: 0 1 2 3 5 6 4"
           }
-        ]
+        ],
+        "sol": "void topoSort(int v) {\n  int indeg[15] = {0};\n  int done[15] = {0};\n  for (int i = 0; i < v; i++)\n    for (int j = 0; j < v; j++) indeg[j] += adj[i][j];\n  printf(\"Topological Order:\");\n  for (int count = 0; count < v; count++) {\n    for (int u = 0; u < v; u++) {\n      if (done[u] == 0 && indeg[u] == 0) {\n        printf(\" %d\", u);\n        done[u] = 1;\n        for (int w = 0; w < v; w++) {\n          indeg[w] -= adj[u][w];\n        }\n        break;\n      }\n    }\n  }\n  printf(\"\\n\");\n}"
       },
       {
         "id": "u4_d2",
-        "title": "Q2. UNDIRECTED GRAPH USING ADJACENCY LISTS",
-        "ps": "Debug addEdge() and printLists() so that every friendship is stored in both students' adjacency lists and the lists are printed in insertion order.",
+        "title": "Q2. Undirected Graph using Adjacency Lists",
+        "ps": "Divya is building a social app in which students are numbered from 0 to v - 1. A friendship works in both directions.\n\nDebug addEdge() and printLists() so that every friendship is stored in both students' adjacency lists and the lists are printed in insertion order.",
+        "inFmt": "The first line contains two integers v and e.\n\nThe next e lines contain two integers a and b representing a friendship between students a and b.",
+        "outFmt": "Print each vertex followed by \":\" and its adjacent vertices separated by spaces.",
+        "cons": "1 <= v <= 15\n0 <= e <= 50\n0 <= a, b < v",
         "sampleIn": "3 2\n2 0\n2 1",
         "sampleOut": "0: 2\n1: 2\n2: 0 1",
         "header": "#include <stdio.h>\nint list[15][15];\nint cnt[15];",
-        "buggy": "void addEdge(int a, int b) {\n    list[a][cnt[a]++] = b;\n}\nvoid printLists(int v) {\n    for (int i = 0; i < v; i++) {\n        printf(\"%d:\", i);\n        for (int j = 0; j <= cnt[i]; j++) {\n            printf(\" %d\", list[i][j]);\n        }\n        printf(\"\\n\");\n    }\n}",
-        "footer": "int main() {\n    int v, e;\n    scanf(\"%d %d\", &v, &e);\n    for (int i = 0; i < e; i++) {\n        int a, b;\n        scanf(\"%d %d\", &a, &b);\n        addEdge(a, b);\n    }\n    printLists(v);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "3 2\n2 0\n2 1\n",
-            "expected": "0: 2\n1: 2\n2: 0 1"
-          },
-          {
-            "input": "4 3\n3 0\n3 1\n0 1\n",
-            "expected": "0: 3 1\n1: 3 0\n2:\n3: 0 1"
-          },
-          {
-            "input": "3 0\n",
-            "expected": "0:\n1:\n2:"
-          },
-          {
-            "input": "5 4\n4 0\n4 1\n4 2\n4 3\n",
-            "expected": "0: 4\n1: 4\n2: 4\n3: 4\n4: 0 1 2 3"
-          },
-          {
-            "input": "6 6\n5 0\n0 3\n3 1\n1 4\n4 2\n2 5\n",
-            "expected": "0: 5 3\n1: 3 4\n2: 4 5\n3: 0 1\n4: 1 2\n5: 0 2"
-          },
-          {
-            "input": "5 7\n0 1\n0 4\n1 2\n1 3\n1 4\n2 3\n3 4\n",
-            "expected": "0: 1 4\n1: 0 2 3 4\n2: 1 3\n3: 1 2 4\n4: 0 1 3"
-          }
-        ],
-        "sol": "void addEdge(int a, int b) {\n    list[a][cnt[a]++] = b;\n    list[b][cnt[b]++] = a;\n}\nvoid printLists(int v) {\n    for (int i = 0; i < v; i++) {\n        printf(\"%d:\", i);\n        for (int j = 0; j < cnt[i]; j++) {\n            printf(\" %d\", list[i][j]);\n        }\n        printf(\"\\n\");\n    }\n}",
+        "buggy": "void addEdge(int a, int b) {\n  list[a][cnt[a]++] = b;\n}",
+        "footer": "void printLists(int v) {\n  for (int i = 0; i < v; i++) {\n    printf(\"%d:\", i);\n    for (int j = 0; j < cnt[i]; j++)\n      printf(\" %d\", list[i][j]);\n    printf(\"\\n\");\n  }\n}\nint main() {\n  int v, e;\n  scanf(\"%d %d\", &v, &e);\n  for (int i = 0; i < e; i++) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    addEdge(a, b);\n  }\n  printLists(v);\n  return 0;\n}",
         "samples": [
           {
             "input": "3 2\n2 0\n2 1",
@@ -2800,60 +2533,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "3 0\n",
-            "expected": "0:\n1:\n2:"
-          },
-          {
-            "input": "5 4\n4 0\n4 1\n4 2\n4 3\n",
-            "expected": "0: 4\n1: 4\n2: 4\n3: 4\n4: 0 1 2 3"
-          },
-          {
-            "input": "6 6\n5 0\n0 3\n3 1\n1 4\n4 2\n2 5\n",
-            "expected": "0: 5 3\n1: 3 4\n2: 4 5\n3: 0 1\n4: 1 2\n5: 0 2"
-          },
-          {
-            "input": "5 7\n0 1\n0 4\n1 2\n1 3\n1 4\n2 3\n3 4\n",
-            "expected": "0: 1 4\n1: 0 2 3 4\n2: 1 3\n3: 1 2 4\n4: 0 1 3"
-          }
-        ]
+        {
+          "input": "6 4\n4 5\n0 5\n1 3\n0 4",
+          "expected": "0: 5 4\n1: 3\n2:\n3: 1\n4: 5 0\n5: 4 0"
+        },
+        {
+          "input": "3 3\n1 2\n0 1\n0 2",
+          "expected": "0: 1 2\n1: 2 0\n2: 1 0"
+        },
+        {
+          "input": "4 2\n1 3\n0 1",
+          "expected": "0: 1\n1: 3 0\n2:\n3: 1"
+        },
+        {
+          "input": "2 1\n0 1",
+          "expected": "0: 1\n1: 0"
+        },
+        {
+          "input": "6 5\n0 5\n1 5\n1 4\n3 5\n2 4",
+          "expected": "0: 5\n1: 5 4\n2: 4\n3: 5\n4: 1 2\n5: 0 1 3"
+        },
+        {
+          "input": "3 2\n0 2\n0 1",
+          "expected": "0: 2 1\n1: 0\n2: 0"
+        }
+      ],
+        "sol": "void addEdge(int a, int b) {\n  list[a][cnt[a]++] = b;\n  list[b][cnt[b]++] = a;\n}"
       },
       {
         "id": "u4_d3",
-        "title": "Q3. IN-DEGREE AND OUT-DEGREE OF A DIRECTED GRAPH",
-        "ps": "Debug printDegrees() to calculate and print the in-degree and out-degree of every vertex in the directed graph.",
+        "title": "Q3. In-degree and Out-degree of a Directed Graph",
+        "ps": "Gokul studies a city with one-way roads. Junctions are numbered from 0 to v - 1. The roads are stored in an adjacency matrix.\n\nThe out-degree is the number of roads starting from a vertex, and the in-degree is the number of roads ending at a vertex.\n\nDebug printDegrees() to calculate and print the in-degree and out-degree of every vertex.",
+        "inFmt": "The first line contains two integers v and e.\n\nThe next e lines contain two integers a and b representing a directed edge from a to b.",
+        "outFmt": "Print each line in the format:\n\nVertex i: In=x Out=y",
+        "cons": "1 <= v <= 15\n0 <= e <= 50\n0 <= a, b < v",
         "sampleIn": "3 2\n0 1\n0 2",
         "sampleOut": "Vertex 0: In=0 Out=2\nVertex 1: In=1 Out=0\nVertex 2: In=1 Out=0",
         "header": "#include <stdio.h>\nint adj[15][15];\nvoid addEdge(int a, int b) { adj[a][b] = 1; }",
-        "buggy": "void printDegrees(int v) {\n    for (int i = 0; i < v; i++) {\n        int in = 0, out = 0;\n        for (int j = 0; j < v; j++) {\n            out += adj[j][i];\n            in += adj[i][j];\n        }\n        printf(\"Vertex %d: In=%d Out=%d\\n\", i, in, out);\n    }\n}",
-        "footer": "int main() {\n    int v, e;\n    scanf(\"%d %d\", &v, &e);\n    for (int i = 0; i < e; i++) {\n        int a, b;\n        scanf(\"%d %d\", &a, &b);\n        addEdge(a, b);\n    }\n    printDegrees(v);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "3 2\n0 1\n0 2\n",
-            "expected": "Vertex 0: In=0 Out=2\nVertex 1: In=1 Out=0\nVertex 2: In=1 Out=0"
-          },
-          {
-            "input": "4 3\n1 0\n2 0\n3 0\n",
-            "expected": "Vertex 0: In=3 Out=0\nVertex 1: In=0 Out=1\nVertex 2: In=0 Out=1\nVertex 3: In=0 Out=1"
-          },
-          {
-            "input": "3 0\n",
-            "expected": "Vertex 0: In=0 Out=0\nVertex 1: In=0 Out=0\nVertex 2: In=0 Out=0"
-          },
-          {
-            "input": "5 5\n1 0\n2 0\n3 0\n4 0\n0 1\n",
-            "expected": "Vertex 0: In=4 Out=1\nVertex 1: In=1 Out=1\nVertex 2: In=0 Out=1\nVertex 3: In=0 Out=1\nVertex 4: In=0 Out=1"
-          },
-          {
-            "input": "6 7\n0 1\n0 2\n1 3\n2 3\n3 4\n4 5\n5 0\n",
-            "expected": "Vertex 0: In=1 Out=2\nVertex 1: In=1 Out=1\nVertex 2: In=1 Out=1\nVertex 3: In=2 Out=1\nVertex 4: In=1 Out=1\nVertex 5: In=1 Out=1"
-          },
-          {
-            "input": "5 6\n0 4\n1 4\n2 4\n3 4\n4 0\n0 1\n",
-            "expected": "Vertex 0: In=1 Out=2\nVertex 1: In=1 Out=1\nVertex 2: In=0 Out=1\nVertex 3: In=0 Out=1\nVertex 4: In=4 Out=1"
-          }
-        ],
-        "sol": "void printDegrees(int v) {\n    for (int i = 0; i < v; i++) {\n        int in = 0, out = 0;\n        for (int j = 0; j < v; j++) {\n            out += adj[i][j];\n            in += adj[j][i];\n        }\n        printf(\"Vertex %d: In=%d Out=%d\\n\", i, in, out);\n    }\n}",
+        "buggy": "void printDegrees(int v) {\n  for (int i = 0; i < v; i++) {\n    int in, out;\n    for (int j = 0; j < v; j++) {\n      in += adj[i][j];\n      out += adj[j][i];\n    }\n    printf(\"Vertex %d: In=%d Out=%d\\n\", i, in, out);\n  }\n}",
+        "footer": "int main() {\n  int v, e;\n  scanf(\"%d %d\", &v, &e);\n  for (int i = 0; i < e; i++) {\n    int a, b;\n    scanf(\"%d %d\", &a, &b);\n    addEdge(a, b);\n  }\n  printDegrees(v);\n  return 0;\n}",
         "samples": [
           {
             "input": "3 2\n0 1\n0 2",
@@ -2866,59 +2584,44 @@ const DB = {
         ],
         "hidden_cases": [
           {
-            "input": "3 0\n",
+            "input": "3 2\n0 1\n0 2",
+            "expected": "Vertex 0: In=0 Out=2\nVertex 1: In=1 Out=0\nVertex 2: In=1 Out=0"
+          },
+          {
+            "input": "4 3\n1 0\n2 0\n3 0",
+            "expected": "Vertex 0: In=3 Out=0\nVertex 1: In=0 Out=1\nVertex 2: In=0 Out=1\nVertex 3: In=0 Out=1"
+          },
+          {
+            "input": "3 0",
             "expected": "Vertex 0: In=0 Out=0\nVertex 1: In=0 Out=0\nVertex 2: In=0 Out=0"
           },
           {
-            "input": "5 5\n1 0\n2 0\n3 0\n4 0\n0 1\n",
+            "input": "5 5\n1 0\n2 0\n3 0\n4 0\n0 1",
             "expected": "Vertex 0: In=4 Out=1\nVertex 1: In=1 Out=1\nVertex 2: In=0 Out=1\nVertex 3: In=0 Out=1\nVertex 4: In=0 Out=1"
           },
           {
-            "input": "6 7\n0 1\n0 2\n1 3\n2 3\n3 4\n4 5\n5 0\n",
+            "input": "6 7\n0 1\n0 2\n1 3\n2 3\n3 4\n4 5\n5 0",
             "expected": "Vertex 0: In=1 Out=2\nVertex 1: In=1 Out=1\nVertex 2: In=1 Out=1\nVertex 3: In=2 Out=1\nVertex 4: In=1 Out=1\nVertex 5: In=1 Out=1"
           },
           {
-            "input": "5 6\n0 4\n1 4\n2 4\n3 4\n4 0\n0 1\n",
+            "input": "5 6\n0 4\n1 4\n2 4\n3 4\n4 0\n0 1",
             "expected": "Vertex 0: In=1 Out=2\nVertex 1: In=1 Out=1\nVertex 2: In=0 Out=1\nVertex 3: In=0 Out=1\nVertex 4: In=4 Out=1"
           }
-        ]
+        ],
+        "sol": "void printDegrees(int v) {\n  for (int i = 0; i < v; i++) {\n    int in = 0, out = 0;\n    for (int j = 0; j < v; j++) {\n      out += adj[i][j];\n      in += adj[j][i];\n    }\n    printf(\"Vertex %d: In=%d Out=%d\\n\", i, in, out);\n  }\n}"
       },
       {
         "id": "u4_d4",
-        "title": "Q4. MINIMUM SPANNING TREE USING PRIM'S ALGORITHM",
-        "ps": "Prim's algorithm starts from vertex 0 and repeatedly adds the cheapest connection to a vertex not yet included. Debug primMST() to return the total weight of the minimum spanning tree.",
+        "title": "Q4. Minimum Spanning Tree using Prim's Algorithm",
+        "ps": "Hari needs to connect campus buildings with the least total cable length. The buildings are numbered from 0 to v - 1, and cable lengths are stored in a weighted adjacency matrix.\n\nPrim's algorithm starts from building 0 and repeatedly adds the cheapest connection to a building not yet included in the minimum spanning tree.\n\nDebug primMST() to return the total weight of the minimum spanning tree.",
+        "inFmt": "The first line contains two integers v and e.\n\nThe next e lines contain three integers a, b, and w representing an undirected weighted edge.",
+        "outFmt": "Print \"MST Weight: \" followed by the total weight.\n\n1 <= w <= 100",
+        "cons": "1 <= v <= 15\n0 <= e <= 50\n0 <= a, b < v",
         "sampleIn": "4 3\n0 1 1\n1 2 2\n2 3 3",
         "sampleOut": "MST Weight: 6",
-        "header": "#include <stdio.h>\nint graph[15][15];\nvoid addEdge(int a, int b, int w) { graph[a][b] = w; graph[b][a] = w; }",
-        "buggy": "int primMST(int v) {\n    int key[15];\n    int inMST[15] = {0};\n    for (int i = 0; i < v; i++) key[i] = 1000000;\n    key[0] = 0;\n    int total = 0;\n    for (int count = 0; count < v; count++) {\n        int u = -1;\n        for (int i = 0; i < v; i++) {\n            if (inMST[i] == 0 && (u == -1 || key[i] > key[u])) u = i;\n        }\n        inMST[u] = 1;\n        total += key[u];\n        for (int w = 0; w < v; w++) {\n            if (graph[u][w] > 0 && inMST[w] == 0 && graph[u][w] > key[w]) key[w] = graph[u][w];\n        }\n    }\n    return total;\n}",
-        "footer": "int main() {\n    int v, e;\n    scanf(\"%d %d\", &v, &e);\n    for (int i = 0; i < e; i++) {\n        int a, b, w;\n        scanf(\"%d %d %d\", &a, &b, &w);\n        addEdge(a, b, w);\n    }\n    printf(\"MST Weight: %d\\n\", primMST(v));\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "4 3\n0 1 1\n1 2 2\n2 3 3\n",
-            "expected": "MST Weight: 6"
-          },
-          {
-            "input": "3 3\n0 1 7\n1 2 3\n0 2 4\n",
-            "expected": "MST Weight: 7"
-          },
-          {
-            "input": "1 0\n",
-            "expected": "MST Weight: 0"
-          },
-          {
-            "input": "3 3\n0 1 4\n1 2 6\n0 2 5\n",
-            "expected": "MST Weight: 9"
-          },
-          {
-            "input": "6 9\n0 1 4\n0 2 4\n1 2 2\n2 3 3\n2 5 2\n2 4 4\n3 4 3\n5 4 3\n1 5 7\n",
-            "expected": "MST Weight: 14"
-          },
-          {
-            "input": "7 11\n0 1 7\n0 3 5\n1 2 8\n1 3 9\n1 4 7\n2 4 5\n3 4 15\n3 5 6\n4 5 8\n4 6 9\n5 6 11\n",
-            "expected": "MST Weight: 39"
-          }
-        ],
-        "sol": "int primMST(int v) {\n    int key[15];\n    int inMST[15] = {0};\n    for (int i = 0; i < v; i++) {\n        key[i] = 1000000;\n    }\n    key[0] = 0;\n    int total = 0;\n    for (int count = 0; count < v; count++) {\n        int u = -1;\n        for (int i = 0; i < v; i++) {\n            if (inMST[i] == 0 && (u == -1 || key[i] < key[u])) {\n                u = i;\n            }\n        }\n        inMST[u] = 1;\n        total += key[u];\n        for (int w = 0; w < v; w++) {\n            if (graph[u][w] > 0 && inMST[w] == 0 && graph[u][w] < key[w]) {\n                key[w] = graph[u][w];\n            }\n        }\n    }\n    return total;\n}",
+        "header": "#include <stdio.h>\nint graph[15][15];\nvoid addEdge(int a, int b, int w) {\n  graph[a][b] = w;\n  graph[b][a] = w;\n}",
+        "buggy": "int primMST(int v) {\n  int key[15];\n  int inMST[15] = {0};\n  for (int i = 0; i < v; i++) key[i] = 1000000;\n  key[0] = 0;\n  int total = 0;\n  for (int count = 0; count < v; count++) {\n    int u = -1;\n    for (int i = 0; i < v; i++)\n      if (inMST[i] == 0 && (u == -1 || key[i] < key[u]))\n        u = i;\n    total += key[u];\n    for (int w = 0; w < v; w++)\n      if (graph[u][w] > 0 && graph[u][w] < key[w])\n        key[w] = graph[u][w];\n  }\n  return total;\n}",
+        "footer": "int main() {\n  int v, e;\n  scanf(\"%d %d\", &v, &e);\n  for (int i = 0; i < e; i++) {\n    int a, b, w;\n    scanf(\"%d %d %d\", &a, &b, &w);\n    addEdge(a, b, w);\n  }\n  printf(\"MST Weight: %d\\n\", primMST(v));\n  return 0;\n}",
         "samples": [
           {
             "input": "4 3\n0 1 1\n1 2 2\n2 3 3",
@@ -2930,60 +2633,45 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1 0\n",
-            "expected": "MST Weight: 0"
-          },
-          {
-            "input": "3 3\n0 1 4\n1 2 6\n0 2 5\n",
-            "expected": "MST Weight: 9"
-          },
-          {
-            "input": "6 9\n0 1 4\n0 2 4\n1 2 2\n2 3 3\n2 5 2\n2 4 4\n3 4 3\n5 4 3\n1 5 7\n",
-            "expected": "MST Weight: 14"
-          },
-          {
-            "input": "7 11\n0 1 7\n0 3 5\n1 2 8\n1 3 9\n1 4 7\n2 4 5\n3 4 15\n3 5 6\n4 5 8\n4 6 9\n5 6 11\n",
-            "expected": "MST Weight: 39"
-          }
-        ]
+        {
+          "input": "5 5\n0 1 1\n1 3 6\n1 2 17\n0 2 15\n3 4 6",
+          "expected": "MST Weight: 28"
+        },
+        {
+          "input": "5 4\n3 4 8\n0 3 9\n0 1 8\n1 2 5",
+          "expected": "MST Weight: 30"
+        },
+        {
+          "input": "6 6\n2 5 4\n0 1 17\n0 5 16\n2 3 3\n1 2 1\n0 4 11",
+          "expected": "MST Weight: 35"
+        },
+        {
+          "input": "3 2\n0 1 1\n1 2 15",
+          "expected": "MST Weight: 16"
+        },
+        {
+          "input": "6 6\n3 5 13\n0 1 13\n0 2 2\n1 3 12\n0 5 14\n1 4 5",
+          "expected": "MST Weight: 45"
+        },
+        {
+          "input": "3 2\n1 2 1\n0 1 17",
+          "expected": "MST Weight: 18"
+        }
+      ],
+        "sol": "int primMST(int v) {\n  int key[15];\n  int inMST[15] = {0};\n  for (int i = 0; i < v; i++) key[i] = 1000000;\n  key[0] = 0;\n  int total = 0;\n  for (int count = 0; count < v; count++) {\n    int u = -1;\n    for (int i = 0; i < v; i++)\n      if (inMST[i] == 0 && (u == -1 || key[i] < key[u]))\n        u = i;\n    inMST[u] = 1;\n    total += key[u];\n    for (int w = 0; w < v; w++) {\n      if (graph[u][w] > 0 && inMST[w] == 0 &&\n          graph[u][w] < key[w]) {\n        key[w] = graph[u][w];\n      }\n    }\n  }\n  return total;\n}"
       },
       {
         "id": "u4_d5",
-        "title": "Q5. SHORTEST PATH USING DIJKSTRA'S ALGORITHM",
-        "ps": "Dijkstra's algorithm finds the shortest distance from a source to every other junction. Debug dijkstra() so that the program prints the shortest distances.",
+        "title": "Q5. Shortest Path using Dijkstra's Algorithm",
+        "ps": "Pooja runs a courier service in a town whose two-way roads have lengths in kilometres. The junctions are numbered from 0 to v - 1, and roads are stored in a weighted adjacency matrix.\n\nDijkstra's algorithm finds the shortest distance from a source junction to every other junction.\n\nDebug dijkstra() so that the program prints the shortest distances.",
+        "inFmt": "The first line contains two integers v and e.\n\nThe next e lines contain three integers a, b, and w representing an undirected weighted edge.\n\nThe last line contains the source vertex src.",
+        "outFmt": "Print each line in the format:\n\nDistance to i: distance\n\n1 <= w <= 100",
+        "cons": "1 <= v <= 15\n0 <= e <= 50\n0 <= a, b, src < v",
         "sampleIn": "3 3\n0 1 2\n1 2 2\n0 2 5\n0",
         "sampleOut": "Distance to 0: 0\nDistance to 1: 2\nDistance to 2: 4",
-        "header": "#include <stdio.h>\nint graph[15][15];\nvoid addEdge(int a, int b, int w) { graph[a][b] = w; graph[b][a] = w; }",
-        "buggy": "void dijkstra(int v, int src) {\n    int dist[15];\n    int visited[15] = {0};\n    for (int i = 0; i < v; i++) dist[i] = 1000000;\n    dist[src] = 0;\n    for (int count = 0; count < v; count++) {\n        int u = -1;\n        for (int i = 0; i < v; i++) {\n            if (visited[i] == 0 && (u == -1 || dist[i] > dist[u])) u = i;\n        }\n        visited[u] = 1;\n        for (int w = 0; w < v; w++) {\n            if (graph[u][w] > 0 && dist[u] + graph[u][w] > dist[w]) dist[w] = dist[u] + graph[u][w];\n        }\n    }\n    for (int i = 0; i < v; i++) printf(\"Distance to %d: %d\\n\", i, dist[i]);\n}",
-        "footer": "int main() {\n    int v, e, src;\n    scanf(\"%d %d\", &v, &e);\n    for (int i = 0; i < e; i++) {\n        int a, b, w;\n        scanf(\"%d %d %d\", &a, &b, &w);\n        addEdge(a, b, w);\n    }\n    scanf(\"%d\", &src);\n    dijkstra(v, src);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "3 3\n0 1 2\n1 2 2\n0 2 5\n0\n",
-            "expected": "Distance to 0: 0\nDistance to 1: 2\nDistance to 2: 4"
-          },
-          {
-            "input": "4 4\n0 1 1\n1 2 1\n2 3 1\n0 3 10\n3\n",
-            "expected": "Distance to 0: 3\nDistance to 1: 2\nDistance to 2: 1\nDistance to 3: 0"
-          },
-          {
-            "input": "1 0\n0\n",
-            "expected": "Distance to 0: 0"
-          },
-          {
-            "input": "4 3\n0 1 5\n1 2 3\n2 3 2\n0\n",
-            "expected": "Distance to 0: 0\nDistance to 1: 5\nDistance to 2: 8\nDistance to 3: 10"
-          },
-          {
-            "input": "6 8\n0 1 7\n0 2 9\n0 5 14\n1 2 10\n1 3 15\n2 3 11\n2 5 2\n3 4 6\n0\n",
-            "expected": "Distance to 0: 0\nDistance to 1: 7\nDistance to 2: 9\nDistance to 3: 20\nDistance to 4: 26\nDistance to 5: 11"
-          },
-          {
-            "input": "7 9\n0 1 2\n0 2 6\n1 3 5\n2 3 8\n3 4 10\n3 5 15\n4 5 6\n4 6 2\n5 6 6\n0\n",
-            "expected": "Distance to 0: 0\nDistance to 1: 2\nDistance to 2: 6\nDistance to 3: 7\nDistance to 4: 17\nDistance to 5: 22\nDistance to 6: 19"
-          }
-        ],
-        "sol": "void dijkstra(int v, int src) {\n    int dist[15];\n    int visited[15] = {0};\n    for (int i = 0; i < v; i++) {\n        dist[i] = 1000000;\n    }\n    dist[src] = 0;\n    for (int count = 0; count < v - 1; count++) {\n        int u = -1;\n        for (int i = 0; i < v; i++) {\n            if (visited[i] == 0 && (u == -1 || dist[i] < dist[u])) {\n                u = i;\n            }\n        }\n        visited[u] = 1;\n        for (int w = 0; w < v; w++) {\n            if (graph[u][w] > 0 && dist[u] + graph[u][w] < dist[w]) {\n                dist[w] = dist[u] + graph[u][w];\n            }\n        }\n    }\n    for (int i = 0; i < v; i++) {\n        printf(\"Distance to %d: %d\\n\", i, dist[i]);\n    }\n}",
+        "header": "#include <stdio.h>\nint graph[15][15];\nvoid addEdge(int a, int b, int w) {\n  graph[a][b] = w;\n  graph[b][a] = w;\n}",
+        "buggy": "void dijkstra(int v, int src) {\n  int dist[15];\n  int visited[15] = {0};\n  for (int i = 0; i < v; i++) dist[i] = 1000000;\n  dist[src] = 0;\n  for (int count = 0; count < v - 1; count++) {\n    int u = -1;\n    for (int i = 0; i < v; i++)\n      if (u == -1 || dist[i] < dist[u])\n        u = i;\n    visited[u] = 1;\n    for (int w = 0; w < v; w++) {\n      if (graph[u][w] > 0 &&\n          dist[u] + graph[u][w] < dist[w]) {\n        dist[w] = dist[u] + graph[u][w];\n      }\n    }\n  }\n  for (int i = 0; i < v; i++)\n    printf(\"Distance to %d: %d\\n\", i, dist[i]);\n}",
+        "footer": "int main() {\n  int v, e, src;\n  scanf(\"%d %d\", &v, &e);\n  for (int i = 0; i < e; i++) {\n    int a, b, w;\n    scanf(\"%d %d %d\", &a, &b, &w);\n    addEdge(a, b, w);\n  }\n  scanf(\"%d\", &src);\n  dijkstra(v, src);\n  return 0;\n}",
         "samples": [
           {
             "input": "3 3\n0 1 2\n1 2 2\n0 2 5\n0",
@@ -2995,25 +2683,33 @@ const DB = {
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1 0\n0\n",
-            "expected": "Distance to 0: 0"
-          },
-          {
-            "input": "4 3\n0 1 5\n1 2 3\n2 3 2\n0\n",
-            "expected": "Distance to 0: 0\nDistance to 1: 5\nDistance to 2: 8\nDistance to 3: 10"
-          },
-          {
-            "input": "6 8\n0 1 7\n0 2 9\n0 5 14\n1 2 10\n1 3 15\n2 3 11\n2 5 2\n3 4 6\n0\n",
-            "expected": "Distance to 0: 0\nDistance to 1: 7\nDistance to 2: 9\nDistance to 3: 20\nDistance to 4: 26\nDistance to 5: 11"
-          },
-          {
-            "input": "7 9\n0 1 2\n0 2 6\n1 3 5\n2 3 8\n3 4 10\n3 5 15\n4 5 6\n4 6 2\n5 6 6\n0\n",
-            "expected": "Distance to 0: 0\nDistance to 1: 2\nDistance to 2: 6\nDistance to 3: 7\nDistance to 4: 17\nDistance to 5: 22\nDistance to 6: 19"
-          }
-        ]
-      }
-    ],
+        {
+          "input": "4 5\n1 2 1\n2 3 13\n0 1 4\n0 3 6\n1 3 9\n3",
+          "expected": "Distance to 0: 6\nDistance to 1: 9\nDistance to 2: 10\nDistance to 3: 0"
+        },
+        {
+          "input": "6 5\n1 2 2\n2 3 20\n0 5 13\n3 4 3\n0 1 3\n3",
+          "expected": "Distance to 0: 25\nDistance to 1: 22\nDistance to 2: 20\nDistance to 3: 0\nDistance to 4: 3\nDistance to 5: 38"
+        },
+        {
+          "input": "4 5\n0 1 4\n0 2 12\n0 3 14\n2 3 19\n1 2 1\n1",
+          "expected": "Distance to 0: 4\nDistance to 1: 0\nDistance to 2: 1\nDistance to 3: 18"
+        },
+        {
+          "input": "4 5\n0 1 1\n0 2 7\n0 3 11\n1 2 19\n2 3 5\n3",
+          "expected": "Distance to 0: 11\nDistance to 1: 12\nDistance to 2: 5\nDistance to 3: 0"
+        },
+        {
+          "input": "4 4\n0 1 6\n0 3 15\n0 2 17\n2 3 17\n2",
+          "expected": "Distance to 0: 17\nDistance to 1: 23\nDistance to 2: 0\nDistance to 3: 17"
+        },
+        {
+          "input": "6 6\n0 3 18\n1 2 12\n2 4 10\n0 4 1\n0 1 18\n0 5 18\n3",
+          "expected": "Distance to 0: 18\nDistance to 1: 36\nDistance to 2: 29\nDistance to 3: 0\nDistance to 4: 19\nDistance to 5: 36"
+        }
+      ],
+        "sol": "void dijkstra(int v, int src) {\n  int dist[15];\n  int visited[15] = {0};\n  for (int i = 0; i < v; i++) dist[i] = 1000000;\n  dist[src] = 0;\n  for (int count = 0; count < v - 1; count++) {\n    int u = -1;\n    for (int i = 0; i < v; i++) {\n      if (visited[i] == 0 &&\n          (u == -1 || dist[i] < dist[u])) {\n        u = i;\n      }\n    }\n    visited[u] = 1;\n    for (int w = 0; w < v; w++) {\n      if (graph[u][w] > 0 && dist[u] != 1000000 &&\n          dist[u] + graph[u][w] < dist[w]) {\n        dist[w] = dist[u] + graph[u][w];\n      }\n    }\n  }\n  for (int i = 0; i < v; i++)\n    printf(\"Distance to %d: %d\\n\", i, dist[i]);\n}"
+      }],
     "cod": [
       {
         "id": "u4_c1",
@@ -3509,330 +3205,254 @@ const DB = {
     "debug": [
       {
         "id": "u5_d1",
-        "title": "Q1. MERGE TWO SORTED ARRAYS",
-        "ps": "Sneha has the sorted attendance lists of two batches and wants a single sorted list. The function mergeArrays() in the editable area is meant to merge two arrays and return the total count. Debug the code so that the program prints the expected output.",
-        "sampleIn": "2\n1 9\n3\n2 3 4",
+        "title": "Q1. Merge Step of Merge Sort",
+        "ps": "Sneha has the sorted attendance lists of two lab batches and wants a single sorted list of all the students. This is the merge step of merge sort: compare the current elements of both lists, copy the smaller one to the result and move ahead in that list, and when one list is finished, copy all the remaining elements of the other list to the result.\n\nThe function mergeArrays() in the editable area is meant to merge the two arrays and return the number of elements in the result, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n1 representing the number of elements in the first list.\n\nThe second line of input consists of n1 space-separated integers representing the first sorted list.\n\nThe third line of input consists of an integer n2 representing the number of elements in the second list.\n\nThe fourth line of input consists of n2 space-separated integers representing the second sorted list.",
+        "outFmt": "The first line of output prints \"Merged Array: \" followed by the elements of the merged sorted list separated by spaces.",
+        "cons": "1 ≤ n1, n2 ≤ 50\n-1000 ≤ elements ≤ 1000",
+        "sampleIn": "3\n1 3 9\n2\n2 4",
         "sampleOut": "Merged Array: 1 2 3 4 9",
-        "header": "#include <stdio.h>\nvoid printArray(int a[], int n) {\n    printf(\"Merged Array:\");\n    for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n    printf(\"\\n\");\n}",
-        "buggy": "int mergeArrays(int a[], int n1, int b[], int n2, int c[]) {\n    int i = 0, j = 0, k = 0;\n    while (i < n1 && j < n2) {\n        if (a[i] < b[j]) {\n            c[k] = a[i];\n            i++;\n        } else {\n            c[k] = b[j];\n            j++;\n        }\n    }\n    while (i < n1) c[k++] = a[i++];\n    while (j < n2) c[k++] = b[j++];\n    return k;\n}",
-        "footer": "int main() {\n    int n1, n2;\n    int a[105], b[105], c[205];\n    scanf(\"%d\", &n1);\n    for (int i = 0; i < n1; i++) scanf(\"%d\", &a[i]);\n    scanf(\"%d\", &n2);\n    for (int i = 0; i < n2; i++) scanf(\"%d\", &b[i]);\n    int total = mergeArrays(a, n1, b, n2, c);\n    printArray(c, total);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "2\n1 9\n3\n2 3 4\n",
-            "expected": "Merged Array: 1 2 3 4 9"
-          },
-          {
-            "input": "3\n4 5 6\n2\n1 2\n",
-            "expected": "Merged Array: 1 2 4 5 6"
-          },
-          {
-            "input": "1\n5\n1\n3\n",
-            "expected": "Merged Array: 3 5"
-          },
-          {
-            "input": "2\n5 6\n4\n1 2 3 4\n",
-            "expected": "Merged Array: 1 2 3 4 5 6"
-          },
-          {
-            "input": "5\n2 4 6 8 10\n3\n1 3 5\n",
-            "expected": "Merged Array: 1 2 3 4 5 6 8 10"
-          },
-          {
-            "input": "3\n1 2 3\n3\n7 8 9\n",
-            "expected": "Merged Array: 1 2 3 7 8 9"
-          }
-        ],
-        "sol": "int mergeArrays(int a[], int n1, int b[], int n2, int c[]) {\n    int i = 0, j = 0, k = 0;\n    while (i < n1 && j < n2) {\n        if (a[i] <= b[j]) {\n            c[k] = a[i];\n            i++;\n        } else {\n            c[k] = b[j];\n            j++;\n        }\n        k++;\n    }\n    while (i < n1) {\n        c[k] = a[i];\n        i++;\n        k++;\n    }\n    while (j < n2) {\n        c[k] = b[j];\n        j++;\n        k++;\n    }\n    return k;\n}",
+        "header": "#include <stdio.h>",
+        "buggy": "int mergeArrays(int a[], int n1, int b[], int n2,\n                int res[]) {\n  int i = 0, j = 0, k = 0;\n  while (i < n1 && j < n2)\n    if (a[i] > b[j])\n      res[k++] = a[i++];\n    else\n      res[k++] = b[j++];\n  return k;\n}",
+        "footer": "int main() {\n  int n1, n2;\n  int a[105], b[105], res[205];\n  if (scanf(\"%d\", &n1) != 1) return 0;\n  for (int i = 0; i < n1; i++) scanf(\"%d\", &a[i]);\n  scanf(\"%d\", &n2);\n  for (int i = 0; i < n2; i++) scanf(\"%d\", &b[i]);\n  int total = mergeArrays(a, n1, b, n2, res);\n  printf(\"Merged Array:\");\n  for (int i = 0; i < total; i++) printf(\" %d\", res[i]);\n  printf(\"\\n\");\n  return 0;\n}",
         "samples": [
           {
-            "input": "2\n1 9\n3\n2 3 4",
+            "input": "3\n1 3 9\n2\n2 4",
             "expected": "Merged Array: 1 2 3 4 9"
           },
           {
-            "input": "3\n4 5 6\n2\n1 2",
+            "input": "3\n2 4 6\n2\n1 5",
             "expected": "Merged Array: 1 2 4 5 6"
           }
         ],
         "hidden_cases": [
           {
-            "input": "1\n5\n1\n3\n",
-            "expected": "Merged Array: 3 5"
+            "input": "3\n1 3 9\n2\n2 4",
+            "expected": "Merged Array: 1 2 3 4 9"
           },
           {
-            "input": "2\n5 6\n4\n1 2 3 4\n",
+            "input": "3\n2 4 6\n2\n1 5",
+            "expected": "Merged Array: 1 2 4 5 6"
+          },
+          {
+            "input": "1\n5\n1\n2",
+            "expected": "Merged Array: 2 5"
+          },
+          {
+            "input": "3\n1 2 3\n3\n4 5 6",
             "expected": "Merged Array: 1 2 3 4 5 6"
           },
           {
-            "input": "5\n2 4 6 8 10\n3\n1 3 5\n",
-            "expected": "Merged Array: 1 2 3 4 5 6 8 10"
+            "input": "2\n10 20\n2\n10 20",
+            "expected": "Merged Array: 10 10 20 20"
           },
           {
-            "input": "3\n1 2 3\n3\n7 8 9\n",
-            "expected": "Merged Array: 1 2 3 7 8 9"
+            "input": "4\n-5 0 2 8\n2\n-10 5",
+            "expected": "Merged Array: -10 -5 0 2 5 8"
           }
-        ]
+        ],
+        "sol": "int mergeArrays(int a[], int n1, int b[], int n2,\n                int res[]) {\n  int i = 0, j = 0, k = 0;\n  while (i < n1 && j < n2)\n    if (a[i] <= b[j])\n      res[k++] = a[i++];\n    else\n      res[k++] = b[j++];\n  while (i < n1) {\n    res[k++] = a[i++];\n  }\n  while (j < n2) {\n    res[k++] = b[j++];\n  }\n  return k;\n}"
       },
       {
         "id": "u5_d2",
-        "title": "Q2. SELECTION SORT",
-        "ps": "Anitha wants to arrange marks in ascending order using selection sort. In every pass, the smallest element of the unsorted part is found and swapped to the front. Debug selectionSort() so that the program prints the expected output.",
-        "sampleIn": "5\n7 3 9 1 5",
+        "title": "Q2. Selection Sort",
+        "ps": "Anitha is a teacher who wants to arrange the marks of her class in ascending order using selection sort. In each pass, selection sort scans the unsorted part of the list to find the minimum value, and then swaps that minimum value with the element at the beginning of the unsorted part.\n\nThe function selectionSort() in the editable area is meant to sort the marks in ascending order, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n representing the number of marks.\n\nThe second line of input consists of n space-separated integers representing the marks.",
+        "outFmt": "The first line of output prints \"Sorted Array: \" followed by the marks sorted in ascending order separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ marks[i] ≤ 1000",
+        "sampleIn": "5\n9 3 7 1 5",
         "sampleOut": "Sorted Array: 1 3 5 7 9",
-        "header": "#include <stdio.h>\nvoid printArray(int a[], int n) {\n    printf(\"Sorted Array:\");\n    for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n    printf(\"\\n\");\n}",
-        "buggy": "void selectionSort(int a[], int n) {\n    for (int i = 0; i < n; i++) {\n        int minIndex = i;\n        for (int j = i + 1; j < n; j++) {\n            if (a[j] > a[minIndex]) minIndex = j;\n        }\n        int temp = a[i];\n        a[i] = a[minIndex];\n        a[minIndex] = temp;\n    }\n}",
-        "footer": "int main() {\n    int n;\n    int a[105];\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    selectionSort(a, n);\n    printArray(a, n);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "5\n7 3 9 1 5\n",
-            "expected": "Sorted Array: 1 3 5 7 9"
-          },
-          {
-            "input": "3\n2 2 1\n",
-            "expected": "Sorted Array: 1 2 2"
-          },
-          {
-            "input": "1\n3\n",
-            "expected": "Sorted Array: 3"
-          },
-          {
-            "input": "4\n1 2 3 4\n",
-            "expected": "Sorted Array: 1 2 3 4"
-          },
-          {
-            "input": "7\n29 10 14 37 13 5 20\n",
-            "expected": "Sorted Array: 5 10 13 14 20 29 37"
-          },
-          {
-            "input": "8\n8 -7 6 -5 4 -3 2 -1\n",
-            "expected": "Sorted Array: -7 -5 -3 -1 2 4 6 8"
-          }
-        ],
-        "sol": "void selectionSort(int a[], int n) {\n    for (int i = 0; i < n - 1; i++) {\n        int minIndex = i;\n        for (int j = i + 1; j < n; j++) {\n            if (a[j] < a[minIndex]) {\n                minIndex = j;\n            }\n        }\n        int temp = a[i];\n        a[i] = a[minIndex];\n        a[minIndex] = temp;\n    }\n}",
+        "header": "#include <stdio.h>",
+        "buggy": "void selectionSort(int a[], int n) {\n  for (int i = 0; i < n - 1; i++) {\n    int min = i;\n    for (int j = i + 1; j < n; j++) {\n      if (a[j] < a[i])\n        min = j;\n      int temp = a[i];\n      a[i] = a[min];\n      a[min] = temp;\n    }\n  }\n}",
+        "footer": "int main() {\n  int n;\n  int a[105];\n  if (scanf(\"%d\", &n) != 1) return 0;\n  for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n  selectionSort(a, n);\n  printf(\"Sorted Array:\");\n  for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n  printf(\"\\n\");\n  return 0;\n}",
         "samples": [
           {
-            "input": "5\n7 3 9 1 5",
+            "input": "5\n9 3 7 1 5",
             "expected": "Sorted Array: 1 3 5 7 9"
           },
           {
-            "input": "3\n2 2 1",
+            "input": "3\n2 1 2",
             "expected": "Sorted Array: 1 2 2"
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n3\n",
-            "expected": "Sorted Array: 3"
-          },
-          {
-            "input": "4\n1 2 3 4\n",
-            "expected": "Sorted Array: 1 2 3 4"
-          },
-          {
-            "input": "7\n29 10 14 37 13 5 20\n",
-            "expected": "Sorted Array: 5 10 13 14 20 29 37"
-          },
-          {
-            "input": "8\n8 -7 6 -5 4 -3 2 -1\n",
-            "expected": "Sorted Array: -7 -5 -3 -1 2 4 6 8"
-          }
-        ]
+        {
+          "input": "5\n9 31 52 15 76",
+          "expected": "Sorted Array: 9 15 31 52 76"
+        },
+        {
+          "input": "4\n61 0 6 45",
+          "expected": "Sorted Array: 0 6 45 61"
+        },
+        {
+          "input": "5\n9 49 72 13 74",
+          "expected": "Sorted Array: 9 13 49 72 74"
+        },
+        {
+          "input": "5\n16 58 1 31 52",
+          "expected": "Sorted Array: 1 16 31 52 58"
+        },
+        {
+          "input": "7\n82 49 25 75 18 63 32",
+          "expected": "Sorted Array: 18 25 32 49 63 75 82"
+        },
+        {
+          "input": "5\n47 6 93 2 50",
+          "expected": "Sorted Array: 2 6 47 50 93"
+        }
+      ],
+        "sol": "void selectionSort(int a[], int n) {\n  for (int i = 0; i < n - 1; i++) {\n    int min = i;\n    for (int j = i + 1; j < n; j++)\n      if (a[j] < a[min])\n        min = j;\n    int temp = a[i];\n    a[i] = a[min];\n    a[min] = temp;\n  }\n}"
       },
       {
         "id": "u5_d3",
-        "title": "Q3. LINEAR SEARCH WITH COMPARISON COUNT",
-        "ps": "Mohan searches for a student's registration number in an unsorted list and counts comparisons. Debug linearSearch() so that the program prints 'Found at index X after Y comparisons' or 'Not Found after Y comparisons'.",
-        "sampleIn": "3\n15 25 35\n25",
+        "title": "Q3. Linear Search with Comparison Counting",
+        "ps": "Mohan is a lab assistant who looks for a student's registration number in an unsorted list by checking each element one by one from left to right. He wants to know whether the student is present and how many comparisons were needed to decide.\n\nThe function linearSearch() in the editable area is meant to print the result of the search along with the number of comparisons, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n representing the number of registration numbers.\n\nThe second line of input consists of n space-separated integers representing the registration numbers.\n\nThe third line of input consists of an integer key representing the registration number to search for.",
+        "outFmt": "If the key is present, print \"Found at index \" followed by the 0-based index and \" after \" followed by the number of comparisons and \" comparisons\". If the key is not present, print \"Not Found after \" followed by the total number of comparisons and \" comparisons\".",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ registration numbers[i], key ≤ 10000",
+        "sampleIn": "3\n10 20 30\n20",
         "sampleOut": "Found at index 1 after 2 comparisons",
         "header": "#include <stdio.h>",
-        "buggy": "void linearSearch(int a[], int n, int key) {\n    int comparisons = 0;\n    for (int i = 0; i < n; i++) {\n        if (a[i] == key) {\n            printf(\"Found at index %d after %d comparisons\\n\", i, comparisons);\n            return;\n        }\n        comparisons++;\n    }\n    printf(\"Not Found after %d comparisons\\n\", comparisons);\n}",
-        "footer": "int main() {\n    int n, key;\n    int a[105];\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    scanf(\"%d\", &key);\n    linearSearch(a, n, key);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "3\n15 25 35\n25\n",
-            "expected": "Found at index 1 after 2 comparisons"
-          },
-          {
-            "input": "4\n2 4 6 8\n5\n",
-            "expected": "Not Found after 4 comparisons"
-          },
-          {
-            "input": "1\n7\n7\n",
-            "expected": "Found at index 0 after 1 comparisons"
-          },
-          {
-            "input": "6\n9 3 9 5 9 1\n9\n",
-            "expected": "Found at index 0 after 1 comparisons"
-          },
-          {
-            "input": "4\n51 62 73 84\n95\n",
-            "expected": "Not Found after 4 comparisons"
-          },
-          {
-            "input": "8\n101 202 303 404 505 606 707 808\n808\n",
-            "expected": "Found at index 7 after 8 comparisons"
-          }
-        ],
-        "sol": "void linearSearch(int a[], int n, int key) {\n    int comparisons = 0;\n    for (int i = 0; i < n; i++) {\n        comparisons++;\n        if (a[i] == key) {\n            printf(\"Found at index %d after %d comparisons\\n\", i, comparisons);\n            return;\n        }\n    }\n    printf(\"Not Found after %d comparisons\\n\", comparisons);\n}",
+        "buggy": "void linearSearch(int a[], int n, int key) {\n  int comps = 0;\n  for (int i = 0; i < n; i++) {\n    if (a[i] == key) {\n      printf(\"Found at index %d after %d comparisons\\n\", i,\n             comps);\n      return;\n    }\n    comps++;\n  }\n  printf(\"Not Found after %d comparisons\\n\", comps);\n}",
+        "footer": "int main() {\n  int n, key;\n  int a[105];\n  if (scanf(\"%d\", &n) != 1) return 0;\n  for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n  scanf(\"%d\", &key);\n  linearSearch(a, n, key);\n  return 0;\n}",
         "samples": [
           {
-            "input": "3\n15 25 35\n25",
+            "input": "3\n10 20 30\n20",
             "expected": "Found at index 1 after 2 comparisons"
           },
           {
-            "input": "4\n2 4 6 8\n5",
+            "input": "4\n5 8 12 19\n15",
             "expected": "Not Found after 4 comparisons"
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n7\n7\n",
-            "expected": "Found at index 0 after 1 comparisons"
-          },
-          {
-            "input": "6\n9 3 9 5 9 1\n9\n",
-            "expected": "Found at index 0 after 1 comparisons"
-          },
-          {
-            "input": "4\n51 62 73 84\n95\n",
-            "expected": "Not Found after 4 comparisons"
-          },
-          {
-            "input": "8\n101 202 303 404 505 606 707 808\n808\n",
-            "expected": "Found at index 7 after 8 comparisons"
-          }
-        ]
+        {
+          "input": "1\n60\n60",
+          "expected": "Found at index 0 after 1 comparisons"
+        },
+        {
+          "input": "4\n57 9 74 38\n57",
+          "expected": "Found at index 0 after 1 comparisons"
+        },
+        {
+          "input": "3\n6 13 29\n6",
+          "expected": "Found at index 0 after 1 comparisons"
+        },
+        {
+          "input": "1\n37\n37",
+          "expected": "Found at index 0 after 1 comparisons"
+        },
+        {
+          "input": "1\n30\n30",
+          "expected": "Found at index 0 after 1 comparisons"
+        },
+        {
+          "input": "2\n16 83\n16",
+          "expected": "Found at index 0 after 1 comparisons"
+        }
+      ],
+        "sol": "void linearSearch(int a[], int n, int key) {\n  int comps = 0;\n  for (int i = 0; i < n; i++) {\n    comps++;\n    if (a[i] == key) {\n      printf(\"Found at index %d after %d comparisons\\n\", i,\n             comps);\n      return;\n    }\n  }\n  printf(\"Not Found after %d comparisons\\n\", comps);\n}"
       },
       {
         "id": "u5_d4",
-        "title": "Q4. SHELL SORT",
-        "ps": "Rakesh sorts prices using Shell sort with gap starting at n/2 and halving. Debug shellSort() so that the program prints the expected sorted array.",
-        "sampleIn": "4\n40 30 20 10",
-        "sampleOut": "Sorted Array: 10 20 30 40",
-        "header": "#include <stdio.h>\nvoid printArray(int a[], int n) {\n    printf(\"Sorted Array:\");\n    for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n    printf(\"\\n\");\n}",
-        "buggy": "void shellSort(int a[], int n) {\n    for (int gap = n / 2; gap > 0; gap /= 2) {\n        for (int i = gap; i < n; i++) {\n            int temp = a[i];\n            int j = i;\n            while (j > gap && a[j - gap] > temp) {\n                a[j] = a[j - gap];\n                j += gap;\n            }\n            a[j] = temp;\n        }\n    }\n}",
-        "footer": "int main() {\n    int n;\n    int a[105];\n    scanf(\"%d\", &n);\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    shellSort(a, n);\n    printArray(a, n);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "4\n40 30 20 10\n",
-            "expected": "Sorted Array: 10 20 30 40"
-          },
-          {
-            "input": "6\n6 1 5 2 4 3\n",
-            "expected": "Sorted Array: 1 2 3 4 5 6"
-          },
-          {
-            "input": "1\n5\n",
-            "expected": "Sorted Array: 5"
-          },
-          {
-            "input": "5\n9 8 7 6 5\n",
-            "expected": "Sorted Array: 5 6 7 8 9"
-          },
-          {
-            "input": "7\n12 34 54 2 3 10 1\n",
-            "expected": "Sorted Array: 1 2 3 10 12 34 54"
-          },
-          {
-            "input": "6\n-2 4 0 -5 9 1\n",
-            "expected": "Sorted Array: -5 -2 0 1 4 9"
-          }
-        ],
-        "sol": "void shellSort(int a[], int n) {\n    for (int gap = n / 2; gap > 0; gap /= 2) {\n        for (int i = gap; i < n; i++) {\n            int temp = a[i];\n            int j = i;\n            while (j >= gap && a[j - gap] > temp) {\n                a[j] = a[j - gap];\n                j -= gap;\n            }\n            a[j] = temp;\n        }\n    }\n}",
+        "title": "Q4. Shell Sort",
+        "ps": "Rakesh keeps the prices of the items in his shop in an array and wants to sort them in ascending order using Shell sort. Shell sort is a generalised insertion sort: it starts with a large gap gap = n / 2, sorts all sub-lists of elements separated by that gap, and then halves the gap in each step until gap = 1, where a final normal insertion sort finishes the ordering.\n\nThe function shellSort() in the editable area is meant to sort the prices in ascending order, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of an integer n representing the number of prices.\n\nThe second line of input consists of n space-separated integers representing the prices.",
+        "outFmt": "The first line of output prints \"Sorted Array: \" followed by the prices in ascending order separated by spaces.",
+        "cons": "1 ≤ n ≤ 100\n1 ≤ prices[i] ≤ 10000",
+        "sampleIn": "4\n23 12 1 8",
+        "sampleOut": "Sorted Array: 1 8 12 23",
+        "header": "#include <stdio.h>",
+        "buggy": "void shellSort(int a[], int n) {\n  for (int gap = n / 2; gap > 0; gap /= 2) {\n    for (int i = gap; i < n; i++) {\n      int temp = a[i];\n      int j;\n      for (j = i; j >= 0 && a[j - 1] > temp; j--)\n        a[j] = a[j - 1];\n      a[j] = temp;\n    }\n  }\n}",
+        "footer": "int main() {\n  int n;\n  int a[105];\n  if (scanf(\"%d\", &n) != 1) return 0;\n  for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n  shellSort(a, n);\n  printf(\"Sorted Array:\");\n  for (int i = 0; i < n; i++) printf(\" %d\", a[i]);\n  printf(\"\\n\");\n  return 0;\n}",
         "samples": [
           {
-            "input": "4\n40 30 20 10",
-            "expected": "Sorted Array: 10 20 30 40"
+            "input": "4\n23 12 1 8",
+            "expected": "Sorted Array: 1 8 12 23"
           },
           {
-            "input": "6\n6 1 5 2 4 3",
-            "expected": "Sorted Array: 1 2 3 4 5 6"
+            "input": "6\n9 8 3 7 5 6",
+            "expected": "Sorted Array: 3 5 6 7 8 9"
           }
         ],
         "hidden_cases": [
-          {
-            "input": "1\n5\n",
-            "expected": "Sorted Array: 5"
-          },
-          {
-            "input": "5\n9 8 7 6 5\n",
-            "expected": "Sorted Array: 5 6 7 8 9"
-          },
-          {
-            "input": "7\n12 34 54 2 3 10 1\n",
-            "expected": "Sorted Array: 1 2 3 10 12 34 54"
-          },
-          {
-            "input": "6\n-2 4 0 -5 9 1\n",
-            "expected": "Sorted Array: -5 -2 0 1 4 9"
-          }
-        ]
+        {
+          "input": "4\n-61 -86 -7 -66",
+          "expected": "Sorted Array: -86 -66 -61 -7"
+        },
+        {
+          "input": "5\n-36 -76 -35 23 -113",
+          "expected": "Sorted Array: -113 -76 -36 -35 23"
+        },
+        {
+          "input": "4\n-1 58 -57 -3",
+          "expected": "Sorted Array: -57 -3 -1 58"
+        },
+        {
+          "input": "5\n46 -8 -63 -58 -104",
+          "expected": "Sorted Array: -104 -63 -58 -8 46"
+        },
+        {
+          "input": "5\n10 34 -62 47 -31",
+          "expected": "Sorted Array: -62 -31 10 34 47"
+        },
+        {
+          "input": "3\n-68 -65 -97",
+          "expected": "Sorted Array: -97 -68 -65"
+        }
+      ],
+        "sol": "void shellSort(int a[], int n) {\n  for (int gap = n / 2; gap > 0; gap /= 2) {\n    for (int i = gap; i < n; i++) {\n      int temp = a[i];\n      int j;\n      for (j = i; j >= gap && a[j - gap] > temp;\n           j -= gap) {\n        a[j] = a[j - gap];\n      }\n      a[j] = temp;\n    }\n  }\n}"
       },
       {
         "id": "u5_d5",
-        "title": "Q5. HASH TABLE WITH SEPARATE CHAINING",
-        "ps": "Vimala maintains a hash table of m buckets using separate chaining (collision list per bucket). Debug insertKey() and printTable() so that the program prints each bucket's keys.",
-        "sampleIn": "3 4\n10 20 30 40",
-        "sampleOut": "Bucket 0: 30\nBucket 1: 10 40\nBucket 2: 20",
-        "header": "#include <stdio.h>\nint table[15][105];\nint cnt[15];",
-        "buggy": "void insertKey(int m, int key) {\n    int idx = key % m;\n    cnt[idx]++;\n    table[idx][cnt[idx]] = key;\n}\nvoid printTable(int m) {\n    for (int i = 0; i < m; i++) {\n        printf(\"Bucket %d:\", i);\n        if (cnt[i] == 0) printf(\" Empty\");\n        for (int j = 0; j <= cnt[i]; j++) printf(\" %d\", table[i][j]);\n        printf(\"\\n\");\n    }\n}",
-        "footer": "int main() {\n    int m, n;\n    scanf(\"%d %d\", &m, &n);\n    for (int i = 0; i < n; i++) {\n        int key;\n        scanf(\"%d\", &key);\n        insertKey(m, key);\n    }\n    printTable(m);\n    return 0;\n}",
-        "hidden": [
-          {
-            "input": "3 4\n10 20 30 40\n",
-            "expected": "Bucket 0: 30\nBucket 1: 10 40\nBucket 2: 20"
-          },
-          {
-            "input": "5 3\n7 12 3\n",
-            "expected": "Bucket 0: Empty\nBucket 1: Empty\nBucket 2: 7 12\nBucket 3: 3\nBucket 4: Empty"
-          },
-          {
-            "input": "4 4\n4 8 12 16\n",
-            "expected": "Bucket 0: 4 8 12 16\nBucket 1: Empty\nBucket 2: Empty\nBucket 3: Empty"
-          },
-          {
-            "input": "2 3\n1 2 3\n",
-            "expected": "Bucket 0: 2\nBucket 1: 1 3"
-          },
-          {
-            "input": "6 5\n10 15 20 25 30\n",
-            "expected": "Bucket 0: 30\nBucket 1: 25\nBucket 2: 20\nBucket 3: 15\nBucket 4: 10\nBucket 5: Empty"
-          },
-          {
-            "input": "3 0\n",
-            "expected": "Bucket 0: Empty\nBucket 1: Empty\nBucket 2: Empty"
-          }
-        ],
-        "sol": "void insertKey(int m, int key) {\n    int idx = key % m;\n    table[idx][cnt[idx]] = key;\n    cnt[idx]++;\n}\nvoid printTable(int m) {\n    for (int i = 0; i < m; i++) {\n        printf(\"Bucket %d:\", i);\n        if (cnt[i] == 0) {\n            printf(\" Empty\");\n        }\n        for (int j = 0; j < cnt[i]; j++) {\n            printf(\" %d\", table[i][j]);\n        }\n        printf(\"\\n\");\n    }\n}",
+        "title": "Q5. Separate Chaining Hash Table",
+        "ps": "Vimala maintains a lookup table of student IDs for a coaching centre. The table has m buckets numbered 0 to m - 1, and each bucket holds a linked list of IDs to handle collisions (separate chaining). The hash function maps an ID k to bucket k mod m.\n\nWhen a new ID is inserted, it is placed at the end of the linked list of its bucket. The functions insertKey() and printTable() in the editable area are meant to insert the IDs and print every bucket that contains at least one ID, but the code contains errors. Debug the code so that the program prints the expected output.",
+        "inFmt": "The first line of input consists of two space-separated integers m and n representing the number of buckets and the number of IDs to insert. The second line of input consists of n space-separated integers representing the student IDs in insertion order.",
+        "outFmt": "For each bucket from 0 to m - 1 that contains at least one ID, print \"Bucket \" followed by the bucket index, a colon, and the IDs in that bucket separated by spaces, one bucket per line.\n\nIf the table is completely empty, print nothing.",
+        "cons": "1 ≤ m ≤ 50\n1 ≤ n ≤ 100\n0 ≤ student IDs[i] ≤ 10000",
+        "sampleIn": "3 4\n1 4 7 2",
+        "sampleOut": "Bucket 1: 1 4 7\nBucket 2: 2",
+        "header": "#include <stdio.h>\n#include <stdlib.h>\nstruct Node {\n  int data;\n  struct Node *next;\n};\nstruct Node *table[55];",
+        "buggy": "void insertKey(int m, int key) {\n  int idx = key % m;\n  struct Node *newNode =\n      (struct Node *)malloc(sizeof(struct Node));\n  newNode->data = key;\n  newNode->next = NULL;\n  table[idx] = newNode;\n}\nvoid printTable(int m) {\n  for (int i = 0; i < m; i++) {\n    printf(\"Bucket %d:\", i);\n    for (struct Node *curr = table[i]; curr != NULL;\n         curr = curr->next) {\n      printf(\" %d\", curr->data);\n    }\n    printf(\"\\n\");\n  }\n}",
+        "footer": "int main() {\n  int m, n;\n  if (scanf(\"%d %d\", &m, &n) != 2) return 0;\n  for (int i = 0; i < m; i++) table[i] = NULL;\n  for (int i = 0; i < n; i++) {\n    int key;\n    scanf(\"%d\", &key);\n    insertKey(m, key);\n  }\n  printTable(m);\n  return 0;\n}",
         "samples": [
           {
-            "input": "3 4\n10 20 30 40",
-            "expected": "Bucket 0: 30\nBucket 1: 10 40\nBucket 2: 20"
+            "input": "3 4\n1 4 7 2",
+            "expected": "Bucket 1: 1 4 7\nBucket 2: 2"
           },
           {
-            "input": "5 3\n7 12 3",
-            "expected": "Bucket 0: Empty\nBucket 1: Empty\nBucket 2: 7 12\nBucket 3: 3\nBucket 4: Empty"
+            "input": "5 3\n5 10 15",
+            "expected": "Bucket 0: 5 10 15"
           }
         ],
         "hidden_cases": [
           {
-            "input": "4 4\n4 8 12 16\n",
-            "expected": "Bucket 0: 4 8 12 16\nBucket 1: Empty\nBucket 2: Empty\nBucket 3: Empty"
+            "input": "3 4\n1 4 7 2",
+            "expected": "Bucket 1: 1 4 7\nBucket 2: 2"
           },
           {
-            "input": "2 3\n1 2 3\n",
-            "expected": "Bucket 0: 2\nBucket 1: 1 3"
+            "input": "5 3\n5 10 15",
+            "expected": "Bucket 0: 5 10 15"
           },
           {
-            "input": "6 5\n10 15 20 25 30\n",
-            "expected": "Bucket 0: 30\nBucket 1: 25\nBucket 2: 20\nBucket 3: 15\nBucket 4: 10\nBucket 5: Empty"
+            "input": "4 2\n0 2",
+            "expected": "Bucket 0: 0\nBucket 2: 2"
           },
           {
-            "input": "3 0\n",
-            "expected": "Bucket 0: Empty\nBucket 1: Empty\nBucket 2: Empty"
+            "input": "1 3\n10 20 30",
+            "expected": "Bucket 0: 10 20 30"
+          },
+          {
+            "input": "5 4\n1 2 3 4",
+            "expected": "Bucket 1: 1\nBucket 2: 2\nBucket 3: 3\nBucket 4: 4"
+          },
+          {
+            "input": "3 3\n6 9 12",
+            "expected": "Bucket 0: 6 9 12"
           }
-        ]
-      }
-    ],
+        ],
+        "sol": "void insertKey(int m, int key) {\n  int idx = key % m;\n  struct Node *newNode =\n      (struct Node *)malloc(sizeof(struct Node));\n  newNode->data = key;\n  newNode->next = NULL;\n  if (table[idx] == NULL) {\n    table[idx] = newNode;\n  } else {\n    struct Node *curr = table[idx];\n    while (curr->next != NULL) {\n      curr = curr->next;\n    }\n    curr->next = newNode;\n  }\n}\nvoid printTable(int m) {\n  for (int i = 0; i < m; i++) {\n    if (table[i] != NULL) {\n      printf(\"Bucket %d:\", i);\n      for (struct Node *curr = table[i]; curr != NULL;\n           curr = curr->next) {\n        printf(\" %d\", curr->data);\n      }\n      printf(\"\\n\");\n    }\n  }\n}"
+      }],
     "cod": [
       {
         "id": "u5_c1",

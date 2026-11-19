@@ -14,6 +14,15 @@ const SECTION_DEFS = [
 
 const MARKS = { mcq: 1, debug: 5, cod: 15 };
 
+// The model exam is a 100-mark paper built from 20 MCQ + 5 debugging + 5
+// coding: 20 × 1 + 5 × 6 + 5 × 10 = 100. Practice and unit exams keep the
+// section marks above.
+const MODEL_MARKS = { mcq: 1, debug: 6, cod: 10 };
+
+function marksFor(sec) {
+  return (state.mode === 'model' ? MODEL_MARKS : MARKS)[sec];
+}
+
 // Practice is untimed. The three exam modes count down and auto-submit at zero.
 const MODES = {
   practice: { id: 'practice', name: 'Practice', blurb: 'No timer · unlimited attempts', limit: 0 },
@@ -151,13 +160,18 @@ function shuffled(list) {
   return out;
 }
 
-// Model exam: one debugging (5) and one coding (15) problem from every unit.
-// 5 × 5 + 5 × 15 = 100 marks exactly.
+// Model exam: four MCQs, one debugging and one coding problem from every unit.
+// 20 × 1 + 5 × 6 + 5 × 10 = 100 marks. Every pick is re-drawn on each attempt.
 function buildModelPaper() {
   const units = Object.keys(DB);
+  const mcq = [];
+  units.forEach((u) => {
+    const pick = shuffled(DB[u].mcq.map((q, i) => i)).slice(0, 4);
+    pick.forEach((i) => mcq.push(tagQuestion(u, 'mcq', i)));
+  });
   const debug = units.map((u) => tagQuestion(u, 'debug', Math.floor(Math.random() * DB[u].debug.length)));
   const cod = units.map((u) => tagQuestion(u, 'cod', Math.floor(Math.random() * DB[u].cod.length)));
-  return { mcq: [], debug: shuffled(debug), cod: shuffled(cod) };
+  return { mcq: shuffled(mcq), debug: shuffled(debug), cod: shuffled(cod) };
 }
 
 // MCQ test: the whole objective bank (20 per unit × 5 = 100), shuffled together.
@@ -192,8 +206,8 @@ function paperTotals(paper = state.paper) {
   const totals = { mcq: 0, debug: 0, cod: 0, max: 0, count: 0 };
   SECTION_DEFS.forEach((def) => {
     const n = paper && paper[def.id] ? paper[def.id].length : 0;
-    totals[def.id] = n * def.marks;
-    totals.max += n * def.marks;
+    totals[def.id] = n * marksFor(def.id);
+    totals.max += n * marksFor(def.id);
     totals.count += n;
   });
   return totals;
@@ -346,11 +360,12 @@ function renderStart() {
   const bankMcq = unitKeys.reduce((n, key) => n + DB[key].mcq.length, 0);
 
   const preview = isModel
-    ? { mcq: 0, debug: unitKeys.length, cod: unitKeys.length }
+    ? { mcq: unitKeys.length * 4, debug: unitKeys.length, cod: unitKeys.length }
     : isMcqTest
     ? { mcq: bankMcq, debug: 0, cod: 0 }
     : { mcq: active.mcq.length, debug: active.debug.length, cod: active.cod.length };
-  const maxMarks = preview.mcq * MARKS.mcq + preview.debug * MARKS.debug + preview.cod * MARKS.cod;
+  const table = state.mode === 'model' ? MODEL_MARKS : MARKS;
+  const maxMarks = preview.mcq * table.mcq + preview.debug * table.debug + preview.cod * table.cod;
   const totalQuestions = preview.mcq + preview.debug + preview.cod;
 
   const modeCards = Object.values(MODES)
@@ -405,7 +420,7 @@ function renderStart() {
     : esc(active.name);
   const timeLine = MODES[state.mode].limit ? clockText(MODES[state.mode].limit) : 'no time limit';
   const composition = isModel
-    ? '5 debugging + 5 coding · one of each from every unit'
+    ? '20 MCQ (4 per unit) + 5 debugging (6 marks) + 5 coding (10 marks) · all random every attempt'
     : isMcqTest
     ? '20 MCQ from every unit · shuffled · no negative marking'
     : `${preview.mcq} MCQ · ${preview.debug} debugging · ${preview.cod} coding`;
@@ -729,7 +744,7 @@ function renderMcqWorkspace() {
       <div class="q-text">${esc(q.q)}</div>
       ${typeof q.code === 'string' && q.code.trim() ? codeBlock(q.code) : ''}
       <div class="q-meta-row">
-        <span class="chip">Marks · ${MARKS.mcq}</span>
+        <span class="chip">Marks · ${marksFor('mcq')}</span>
         <span class="chip">No negative marking</span>
         ${locked ? '<span class="chip ok">Answer locked</span>' : '<span class="chip warn">Not submitted</span>'}
       </div>
@@ -845,7 +860,7 @@ function renderCodeWorkspace() {
 
       <div class="q-meta-row">
         ${state.mode === 'model' && q._unit ? `<span class="chip accent">Unit ${q._unit.slice(1)}</span>` : ''}
-        <span class="chip">Marks · ${MARKS[state.sec]}</span>
+        <span class="chip">Marks · ${marksFor(state.sec)}</span>
         <span class="chip">${hidden.length} hidden test case${hidden.length === 1 ? '' : 's'}</span>
         <span class="chip">No negative marking</span>
         ${sub ? `<span class="chip ${sub.passedCount === sub.total ? 'ok' : 'warn'}">Last submit ${sub.passedCount}/${sub.total}</span>` : ''}
@@ -915,6 +930,10 @@ function renderCodeWorkspace() {
     bindCustomInput(key);
   } else {
     destroyLockedViews();
+    // The Result tab replaces the editor DOM, so the old instance is gone.
+    // Dropping the reference stops Clear/theme/font handlers from writing
+    // through a detached editor that still belongs to a previous question.
+    cm = null;
   }
 }
 
@@ -1543,7 +1562,7 @@ function renderBottomBar() {
   const locked = !!state.locked[key];
 
   marks.innerHTML = `
-    <span>Marks : <b>${MARKS[state.sec]}</b></span>
+    <span>Marks : <b>${marksFor(state.sec)}</b></span>
     <span style="color:var(--border-strong)">|</span>
     <span>Negative Marks : <b>0</b></span>
     <span style="color:var(--border-strong)">|</span>
@@ -1918,7 +1937,9 @@ function toggleRunButtons(busy, submit) {
 function resetCode() {
   const key = keyOf();
   delete state.codes[key];
-  if (cm) {
+  // Only the attached editor belongs to the question on screen; a detached
+  // one would write the new default into a different question's saved code.
+  if (cm && document.body.contains(cm.getWrapperElement())) {
     cm.setValue(defaultCode());
   }
   persist();
@@ -2014,17 +2035,17 @@ function scoreFor(sec) {
       // A question whose key has no matching option (a < 0) cannot be answered
       // wrongly, so it is scored as a bonus for every attempt made.
       if (q.a < 0) {
-        if (state.answers[key] !== undefined) earned += MARKS.mcq;
+        if (state.answers[key] !== undefined) earned += marksFor('mcq');
         return;
       }
-      if (state.answers[key] === q.a) earned += MARKS.mcq;
+      if (state.answers[key] === q.a) earned += marksFor('mcq');
       return;
     }
     const res = state.submit[key];
     if (!res || !res.total) return;
-    earned += (res.passedCount / res.total) * MARKS[sec];
+    earned += (res.passedCount / res.total) * marksFor(sec);
   });
-  return { earned, max: list.length * MARKS[sec] };
+  return { earned, max: list.length * marksFor(sec) };
 }
 
 function renderReport() {
@@ -2032,7 +2053,7 @@ function renderReport() {
   setExamChrome(false);
   $('#examMain').classList.remove('wide-palette');
   const sections = liveSections();
-  const scored = sections.map((s) => Object.assign({}, s, scoreFor(s.id)));
+  const scored = sections.map((s) => Object.assign({}, s, { marks: marksFor(s.id) }, scoreFor(s.id)));
   const total = scored.reduce((n, s) => n + s.earned, 0);
   const max = scored.reduce((n, s) => n + s.max, 0);
   const pct = max ? Math.round((total / max) * 100) : 0;
@@ -2101,7 +2122,7 @@ function renderReport() {
             <div>${esc(q.ps || '')}</div>
             ${specBlocks(q)}
             <div class="answer-line">
-              <span>Marks: <b>${res ? round1((res.passedCount / res.total) * MARKS[sec]) : 0} / ${MARKS[sec]}</b></span>
+              <span>Marks: <b>${res ? round1((res.passedCount / res.total) * marksFor(sec)) : 0} / ${marksFor(sec)}</b></span>
             </div>
             <div class="q-label" style="margin-top:10px">Sample output</div>
             <pre>${esc(q.sampleOut || (q.samples && q.samples[0] ? q.samples[0].expected : ''))}</pre>
